@@ -1,0 +1,2676 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MMGY · Media Planning Optimizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Figtree:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:#E8581A; --orange-soft:#F47B47; --orange-pale:#FEF0E8; --orange-wash:#FDF8F5;
+  --blue:#1A3B8C; --blue-soft:#4466CC; --blue-pale:#EEF2FB;
+  --ink:#1C1C2E; --ink-2:#3D3D52; --ink-3:#6B6B82; --ink-4:#9898AC;
+  --rule:#E8E8F0; --rule-light:#F2F2F8;
+  --surface:#FFFFFF; --bg:#F7F7FB; --bg-warm:#FAFAF8;
+  --green:#1A8A4A; --green-pale:#EBF7F0; --green-dk:#0F5C30;
+  --amber:#9A5800; --amber-pale:#FFF3DC;
+  --red:#B83227; --red-pale:#FCECEA;
+  --slate:#64748B; --slate-pale:#F1F5F9;
+  --conf-confirmed:#1A8A4A; --conf-bench:#9A5800; --conf-est:#B83227;
+  --shadow-sm:0 1px 3px rgba(28,28,46,.06),0 1px 2px rgba(28,28,46,.04);
+  --shadow-md:0 4px 16px rgba(28,28,46,.08),0 1px 4px rgba(28,28,46,.04);
+  --r:12px; --r-sm:8px; --r-xs:5px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Figtree',sans-serif;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;}
+
+/* ── HEADER ── */
+.hdr{background:var(--surface);border-bottom:1px solid var(--rule);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-sm);}
+.hdr-l{display:flex;align-items:center;gap:20px;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-mk{width:34px;height:34px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:justify-content:center;font-family:'Playfair Display';font-size:15px;color:#fff;font-weight:500;}
+.logo-nm{font-family:'Playfair Display';font-size:15px;color:var(--ink);font-weight:500;}
+.logo-sb{font-size:10px;color:var(--ink-4);letter-spacing:1px;text-transform:uppercase;display:block;line-height:1;margin-top:2px;}
+.sep{width:1px;height:24px;background:var(--rule);}
+.hdr-ttl{font-size:13px;color:var(--ink-3);font-weight:400;}
+.hdr-r{display:flex;align-items:center;gap:10px;}
+.pill{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500;letter-spacing:.5px;font-family:'JetBrains Mono';}
+.pill-o{background:var(--orange-pale);color:var(--orange);}
+.pill-b{background:var(--blue-pale);color:var(--blue);}
+.pill-g{background:var(--green-pale);color:var(--green);}
+
+/* ── APP NAV ── */
+.app-nav{background:var(--surface);border-bottom:1px solid var(--rule);position:sticky;top:60px;z-index:150;box-shadow:0 1px 0 var(--rule);}
+.app-nav-inner{max-width:1480px;margin:0 auto;padding:0 40px;display:flex;align-items:center;gap:4px;}
+.app-tab{padding:0 20px;height:44px;border:none;background:transparent;font-family:'Figtree';font-size:13px;font-weight:500;color:var(--ink-4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:8px;}
+.app-tab:hover{color:var(--ink-2);}
+.app-tab.active{color:var(--orange);border-bottom-color:var(--orange);}
+.app-tab.locked{opacity:.4;cursor:not-allowed;}
+.app-tab-icon{font-size:14px;}
+.mp-badge{background:var(--green-pale);color:var(--green);font-size:10px;padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono';font-weight:500;}
+
+/* ── LAYOUT ── */
+.app{max-width:1480px;margin:0 auto;padding:28px 40px 48px;}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);box-shadow:var(--shadow-sm);overflow:hidden;}
+.card-head{padding:16px 24px 15px;border-bottom:1px solid var(--rule-light);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-family:'Playfair Display';font-size:14px;font-weight:500;color:var(--ink);}
+.card-act{font-size:11px;color:var(--orange);cursor:pointer;font-weight:500;background:none;border:none;transition:opacity .15s;}
+.card-act:hover{opacity:.7;}
+
+/* ── SETUP TAB ── */
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;}
+.setup-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-bottom:24px;}
+.setup-section{margin-bottom:24px;}
+.setup-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.setup-label-line{flex:1;height:1px;background:var(--rule);}
+.setup-field{margin-bottom:14px;}
+.setup-field label{display:block;font-size:12px;font-weight:500;color:var(--ink-2);margin-bottom:5px;}
+.setup-field input[type=text], .setup-field input[type=number], .setup-field select, .setup-field textarea{width:100%;padding:8px 12px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'Figtree';font-size:13px;color:var(--ink);background:var(--bg);transition:all .15s;}
+.setup-field input:focus, .setup-field select:focus, .setup-field textarea:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,88,26,.08);background:var(--surface);}
+.setup-field .hint{font-size:11px;color:var(--ink-4);margin-top:4px;font-style:italic;}
+
+/* ── CHANNEL TOGGLES ── */
+.ch-toggle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.ch-toggle{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--rule);border-radius:var(--r-sm);cursor:pointer;transition:all .15s;background:var(--surface);}
+.ch-toggle:hover{border-color:var(--orange);background:var(--orange-wash);}
+.ch-toggle.active{border-color:var(--orange);background:var(--orange-pale);}
+.ch-toggle-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ch-toggle-name{font-size:12px;font-weight:500;color:var(--ink-2);}
+.ch-toggle-type{font-size:10px;color:var(--ink-4);}
+.ch-toggle input[type=checkbox]{display:none;}
+
+/* ── SEASONALITY EDITOR ── */
+.season-editor{display:grid;grid-template-columns:repeat(12,1fr);gap:8px;padding:16px 0;}
+.season-month{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.season-month label{font-size:10px;color:var(--ink-4);font-family:'JetBrains Mono';}
+.season-month input[type=range]{writing-mode:vertical-lr;direction:rtl;width:24px;height:80px;-webkit-appearance:slider-vertical;}
+.season-month .s-val{font-size:10px;font-family:'JetBrains Mono';color:var(--orange);font-weight:500;}
+
+/* ── MARKET SELECTOR ── */
+.mkt-search-wrap{position:relative;margin-bottom:12px;}
+.mkt-search{width:100%;padding:9px 14px 9px 36px;border:1px solid var(--rule);border-radius:var(--r-sm);font-family:'Figtree';font-size:13px;color:var(--ink);background:var(--surface);}
+.mkt-search:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,88,26,.08);}
+.mkt-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink-4);font-size:14px;}
+.mkt-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-sm);box-shadow:var(--shadow-md);z-index:500;max-height:240px;overflow-y:auto;display:none;}
+.mkt-dropdown.open{display:block;}
+.mkt-option{padding:8px 14px;font-size:12px;color:var(--ink-2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .1s;}
+.mkt-option:hover{background:var(--orange-wash);}
+.mkt-option .mkt-rank{font-size:10px;font-family:'JetBrains Mono';color:var(--ink-4);}
+.mkt-selected-list{display:flex;flex-direction:column;gap:6px;}
+.mkt-selected-row{display:grid;grid-template-columns:1fr 80px 80px 32px;gap:8px;align-items:center;padding:8px 12px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-sm);}
+.mkt-selected-name{font-size:12px;font-weight:500;color:var(--ink-2);}
+.mkt-score-inp{width:72px;padding:5px 8px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'JetBrains Mono';font-size:12px;text-align:right;background:var(--bg);}
+.mkt-score-inp:focus{outline:none;border-color:var(--orange);background:var(--surface);}
+.mkt-score-label{font-size:10px;color:var(--ink-4);font-family:'JetBrains Mono';text-align:center;}
+.mkt-remove{background:none;border:none;color:var(--ink-4);cursor:pointer;font-size:16px;line-height:1;padding:2px;border-radius:3px;transition:color .15s;}
+.mkt-remove:hover{color:var(--red);}
+
+/* ── SETUP CTA ── */
+.setup-cta{background:var(--orange);border:none;border-radius:var(--r-sm);color:#fff;font-family:'Figtree';font-size:14px;font-weight:600;padding:14px 32px;cursor:pointer;transition:all .2s;letter-spacing:.3px;}
+.setup-cta:hover{background:#D44D15;box-shadow:0 4px 16px rgba(232,88,26,.3);transform:translateY(-1px);}
+.setup-cta:active{transform:translateY(0);}
+
+/* ── HERO ── */
+.hero{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-sm);}
+.hm{background:var(--surface);padding:20px 24px 18px;transition:background .15s;position:relative;}
+.hm::after{content:'';position:absolute;bottom:0;left:24px;right:24px;height:2px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform .25s ease;border-radius:2px;}
+.hm:hover{background:var(--orange-wash);}
+.hm:hover::after{transform:scaleX(1);}
+.hm-label{font-size:10px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-4);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.hm-value{font-family:'Playfair Display';font-size:28px;font-weight:400;color:var(--ink);line-height:1;margin-bottom:5px;}
+.hm-value.accent{color:var(--orange);}
+.hm-value.pos{color:var(--green);}
+.hm-sub{font-size:11px;color:var(--ink-4);}
+
+/* ── MAIN GRID ── */
+.main-grid{display:grid;grid-template-columns:1fr 400px;gap:20px;margin-bottom:20px;align-items:start;}
+
+/* ── TABS ── */
+.tabs{display:flex;padding:0 24px;border-bottom:1px solid var(--rule-light);background:var(--bg-warm);}
+.tab{padding:10px 14px;font-size:12px;font-weight:500;color:var(--ink-4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange);}
+.tab:hover:not(.active){color:var(--ink-2);}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* ── CHANNEL ROWS ── */
+.ch-row{display:grid;grid-template-columns:18px 1fr 70px 120px 54px 62px 110px;gap:10px;align-items:center;padding:10px 24px;border-bottom:1px solid var(--rule-light);transition:background .12s;}
+.ch-row:last-child{border-bottom:none;}
+.ch-row:hover{background:var(--bg);}
+.ch-num{font-size:11px;color:var(--ink-4);font-family:'JetBrains Mono';}
+.ch-info{min-width:0;}
+.ch-name{font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.ch-type{font-size:10px;color:var(--ink-4);}
+.ch-track{height:3px;background:var(--rule);border-radius:2px;margin-top:4px;overflow:hidden;}
+.ch-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+.min-inp{width:48px;padding:5px 7px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'JetBrains Mono';font-size:12px;color:var(--ink);background:var(--bg);text-align:right;transition:border-color .15s,box-shadow .15s;}
+.min-inp:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,88,26,.08);background:var(--surface);}
+.ch-pct{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-3);text-align:right;}
+.ch-pct.live{color:var(--orange);font-weight:500;}
+.ch-dollars{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-4);text-align:right;}
+
+/* ── CONTROLS ── */
+.ctrl-body{padding:20px 24px;}
+.ctrl-group{margin-bottom:20px;}
+.ctrl-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.ctrl-label-txt{font-size:12px;font-weight:500;color:var(--ink-2);}
+.ctrl-val{font-family:'JetBrains Mono';font-size:12px;color:var(--orange);font-weight:500;}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;border-radius:2px;background:var(--rule);cursor:pointer;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--surface);border:2px solid var(--orange);box-shadow:0 1px 4px rgba(232,88,26,.25);transition:transform .15s;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
+.range-lbls{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-4);margin-top:5px;font-family:'JetBrains Mono';}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg);border:1px solid var(--rule);border-radius:var(--r-sm);padding:3px;gap:2px;}
+.seg-btn{padding:7px 4px;border:none;border-radius:6px;background:transparent;color:var(--ink-3);font-family:'Figtree';font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;}
+.seg-btn.active{background:var(--surface);color:var(--orange);box-shadow:var(--shadow-sm);}
+
+/* ── OPTIMIZE BTN ── */
+.opt-btn{width:100%;padding:14px;background:var(--orange);border:none;border-radius:var(--r-sm);color:#fff;font-family:'Figtree';font-size:14px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .2s;}
+.opt-btn:hover{background:#D44D15;box-shadow:0 4px 16px rgba(232,88,26,.3);transform:translateY(-1px);}
+.opt-btn:active{transform:translateY(0);}
+.opt-btn.running{background:var(--bg);color:var(--orange);border:1px solid var(--orange);box-shadow:none;transform:none;}
+.opt-btn.done{background:var(--green);}
+.opt-btn.done:hover{background:#147A3E;box-shadow:0 4px 16px rgba(26,138,74,.25);}
+
+/* ── RESULTS ── */
+.results-section{margin-top:20px;}
+.results-title{font-family:'Playfair Display';font-size:13px;color:var(--ink-3);margin-bottom:12px;font-style:italic;}
+.r-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--rule-light);font-size:12px;}
+.r-row:last-child{border-bottom:none;}
+.r-label{display:flex;align-items:center;gap:8px;color:var(--ink-3);}
+.r-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.r-vals{display:flex;align-items:center;gap:10px;}
+.r-pct{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-4);}
+.r-delta{font-family:'JetBrains Mono';font-size:12px;font-weight:500;padding:2px 6px;border-radius:3px;}
+.r-delta.up{color:var(--green);background:var(--green-pale);}
+.r-delta.dn{color:var(--red);background:var(--red-pale);}
+.r-delta.neu{color:var(--ink-4);background:var(--rule-light);}
+
+/* ── NARRATIVE ── */
+.narrative{background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--orange);border-radius:var(--r);padding:20px 24px;margin-top:20px;box-shadow:var(--shadow-sm);display:none;}
+.narr-eye{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.pulse{width:7px;height:7px;background:var(--orange);border-radius:50%;animation:pd 2s ease-in-out infinite;}
+@keyframes pd{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.8);}}
+.narr-body{font-size:13px;color:var(--ink-3);line-height:1.8;}
+.narr-body strong{color:var(--ink);font-weight:500;}
+
+/* ── DISCLAIMER ── */
+.disclaimer{background:var(--slate-pale);border:1px solid #DDE3EC;border-left:3px solid var(--slate);border-radius:var(--r);padding:14px 20px;margin-top:16px;display:flex;gap:12px;align-items:flex-start;}
+.disc-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.disc-body{font-size:12px;color:var(--slate);line-height:1.65;}
+.disc-body strong{color:var(--ink-2);font-weight:500;}
+
+/* ── BOTTOM GRID ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;}
+.section-label{display:flex;align-items:center;gap:14px;margin:24px 0 16px;}
+.sl-line{flex:1;height:1px;background:var(--rule);}
+.sl-text{font-family:'Playfair Display';font-size:13px;color:var(--ink-4);font-style:italic;white-space:nowrap;}
+.season-wrap{padding:20px 24px 16px;}
+.season-bars{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;align-items:end;height:90px;margin-bottom:8px;}
+.s-bar-wrap{display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;}
+.s-bar{width:100%;border-radius:3px 3px 0 0;transition:height .5s cubic-bezier(.4,0,.2,1),background .3s;min-height:4px;}
+
+/* ── CHANNEL RETURN TABLE ── */
+.cr-header{display:grid;grid-template-columns:1fr 62px 72px 80px 1fr;gap:0;padding:7px 16px;background:var(--bg-warm);border-bottom:1px solid var(--rule);font-size:9px;font-weight:600;color:var(--ink-4);text-transform:uppercase;letter-spacing:.7px;font-family:'JetBrains Mono';}
+.cr-row{display:grid;grid-template-columns:1fr 62px 72px 80px 1fr;gap:0;padding:8px 16px;border-bottom:1px solid var(--rule-light);transition:background .12s;align-items:center;}
+.cr-row:last-child{border-bottom:none;}
+.cr-row:hover{background:var(--bg);}
+.cr-name{font-size:12px;font-weight:500;color:var(--ink-2);display:flex;align-items:center;gap:7px;}
+.cr-spend{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-3);text-align:right;}
+.cr-ret{font-family:'JetBrains Mono';font-size:11px;font-weight:500;text-align:right;}
+.cr-impact{font-family:'JetBrains Mono';font-size:11px;font-weight:500;text-align:right;}
+.cr-bar-wrap{padding-left:10px;}
+.cr-bar-track{height:5px;background:var(--rule-light);border-radius:3px;overflow:hidden;}
+.cr-bar-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.cr-dim-note{font-size:9px;color:var(--ink-4);font-family:'JetBrains Mono';margin-top:2px;}
+.mp-color-swatch{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+/* ── GEO LAYER ── */
+.geo-section{padding:16px 24px;background:var(--bg-warm);border-top:1px solid var(--rule-light);}
+.geo-title{font-size:11px;font-weight:500;color:var(--ink-3);letter-spacing:.5px;margin-bottom:12px;text-transform:uppercase;}
+.geo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* ── ASSUMPTION EDITOR ── */
+.assump-row{display:grid;grid-template-columns:1fr 80px 1fr;gap:12px;align-items:center;padding:9px 24px;border-bottom:1px solid var(--rule-light);transition:background .12s;}
+.assump-row:last-child{border-bottom:none;}
+.assump-row:hover{background:var(--bg);}
+.assump-name{font-size:12px;font-weight:500;color:var(--ink-2);}
+.assump-source{font-size:10px;color:var(--ink-4);margin-top:2px;font-style:italic;}
+.assump-val{text-align:center;}
+.assump-inp{width:72px;padding:5px 8px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'JetBrains Mono';font-size:12px;font-weight:500;color:var(--ink);background:var(--bg);text-align:right;transition:all .15s;}
+.assump-inp:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,88,26,.08);background:var(--surface);}
+.conf-badge{padding:3px 8px;border-radius:3px;font-size:10px;font-weight:600;font-family:'JetBrains Mono';letter-spacing:.3px;white-space:nowrap;}
+.cb-c{background:var(--green-pale);color:var(--conf-confirmed);}
+.cb-b{background:var(--amber-pale);color:var(--conf-bench);}
+.cb-e{background:var(--red-pale);color:var(--conf-est);}
+
+/* ── SENSITIVITY ── */
+.sens-row{display:grid;grid-template-columns:1fr 80px 80px;gap:8px;align-items:center;padding:8px 24px;border-bottom:1px solid var(--rule-light);font-size:12px;}
+.sens-row:last-child{border-bottom:none;}
+.sens-name{color:var(--ink-2);}
+.sens-impact{font-family:'JetBrains Mono';font-size:11px;color:var(--orange);text-align:center;font-weight:500;}
+
+/* ── MARKETS TAB ── */
+.mkt-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.mkt-pool-bar{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-sm);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:20px;box-shadow:var(--shadow-sm);}
+.mkt-pool-left,.mkt-pool-right{min-width:80px;}
+.mkt-pool-label{font-size:10px;color:var(--ink-4);text-transform:uppercase;letter-spacing:.7px;font-family:'JetBrains Mono';}
+.mkt-pool-value{font-family:'Playfair Display';font-size:18px;font-weight:400;color:var(--ink);line-height:1.2;}
+.mkt-pool-track-wrap{flex:1;}
+.mkt-pool-track{height:6px;background:var(--rule);border-radius:3px;overflow:hidden;margin-bottom:4px;}
+.mkt-pool-fill{height:100%;background:var(--orange);border-radius:3px;transition:width .3s ease;}
+.mkt-pool-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-4);font-family:'JetBrains Mono';}
+.mkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.mkt-section-note{padding:10px 16px;font-size:11px;color:var(--ink-4);background:var(--bg-warm);border-bottom:1px solid var(--rule-light);line-height:1.6;font-style:italic;}
+.mkt-row{padding:10px 16px;border-bottom:1px solid var(--rule-light);}
+.mkt-row:last-child{border-bottom:none;}
+.mkt-row-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.mkt-flag{font-size:18px;flex-shrink:0;}
+.mkt-info{flex:1;min-width:0;}
+.mkt-name{font-size:13px;font-weight:500;color:var(--ink);}
+.mkt-meta{font-size:10px;color:var(--ink-4);margin-top:2px;}
+.mkt-pax{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-3);flex-shrink:0;}
+.mkt-budget-val{font-family:'JetBrains Mono';font-size:12px;font-weight:500;color:var(--orange);flex-shrink:0;min-width:60px;text-align:right;}
+.mkt-slider-wrap{display:flex;align-items:center;gap:10px;}
+.mkt-pct-badge{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-4);min-width:32px;text-align:right;}
+.mkt-subtotal-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--bg-warm);border-top:2px solid var(--rule);font-size:12px;color:var(--ink-3);}
+.mkt-subtotal-val{font-family:'JetBrains Mono';font-size:12px;font-weight:500;color:var(--orange);}
+
+/* ── CHANNEL MATRIX ── */
+.cmx-header{display:grid;gap:0;padding:8px 14px;background:var(--bg-warm);border-bottom:1px solid var(--rule);}
+.cmx-row{display:grid;gap:0;padding:7px 14px;border-bottom:1px solid var(--rule-light);align-items:center;transition:background .1s;}
+.cmx-row:hover{background:var(--bg);}
+.cmx-mkt-lbl{font-size:10px;font-weight:600;color:var(--ink-4);text-transform:uppercase;letter-spacing:.5px;text-align:center;}
+.cmx-ch-lbl{text-align:left;}
+.cmx-ch-name{font-size:11px;font-weight:500;color:var(--ink-2);display:flex;align-items:center;gap:6px;}
+.cmx-cell{padding:3px 6px;}
+.cmx-bar-wrap{height:20px;background:var(--rule-light);border-radius:3px;overflow:hidden;position:relative;cursor:default;}
+.cmx-bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:5px;min-width:3px;}
+.cmx-bar-val{font-size:9px;font-family:'JetBrains Mono';color:rgba(255,255,255,.9);white-space:nowrap;}
+
+/* ── MEDIA PLAN ── */
+.mp-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap;}
+.mp-doc-title{font-family:'Playfair Display';font-size:20px;font-weight:500;color:var(--ink);}
+.mp-doc-sub{font-size:12px;color:var(--ink-4);margin-top:3px;font-style:italic;}
+.mp-toolbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.mp-ctrl-group{display:flex;align-items:center;gap:8px;}
+.mp-ctrl-label{font-size:11px;color:var(--ink-3);font-weight:500;white-space:nowrap;}
+.mp-select{padding:6px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'Figtree';font-size:12px;color:var(--ink);background:var(--surface);cursor:pointer;}
+.mp-select:focus{outline:none;border-color:var(--orange);}
+.gen-btn{padding:9px 20px;background:var(--orange);border:none;border-radius:var(--r-sm);color:#fff;font-family:'Figtree';font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.gen-btn:hover{background:#D44D15;box-shadow:0 4px 12px rgba(232,88,26,.25);transform:translateY(-1px);}
+.print-btn{padding:9px 20px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-sm);color:var(--ink-2);font-family:'Figtree';font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.print-btn:hover{border-color:var(--ink-3);color:var(--ink);}
+.mp-empty{text-align:center;padding:64px 40px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);box-shadow:var(--shadow-sm);}
+.mp-empty-icon{font-size:40px;color:var(--rule);margin-bottom:16px;}
+.mp-empty-title{font-family:'Playfair Display';font-size:18px;color:var(--ink-2);margin-bottom:8px;}
+.mp-empty-sub{font-size:13px;color:var(--ink-4);max-width:500px;margin:0 auto;line-height:1.7;}
+.mp-section-title{font-family:'Playfair Display';font-size:15px;font-weight:500;color:var(--ink);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--rule);}
+.mp-header-block{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:24px 28px;margin-bottom:20px;box-shadow:var(--shadow-sm);display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;}
+.mp-hb-client{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:6px;font-family:'JetBrains Mono';}
+.mp-hb-title{font-family:'Playfair Display';font-size:22px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+.mp-hb-sub{font-size:13px;color:var(--ink-3);}
+.mp-hb-right{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r-sm);overflow:hidden;}
+.mp-hb-stat{background:var(--surface);padding:12px 16px;text-align:center;}
+.mp-hb-stat-val{font-family:'Playfair Display';font-size:18px;font-weight:400;color:var(--ink);line-height:1;margin-bottom:4px;}
+.mp-hb-stat-val.o{color:var(--orange);}
+.mp-hb-stat-val.g{color:var(--green);}
+.mp-hb-stat-lbl{font-size:10px;color:var(--ink-4);text-transform:uppercase;letter-spacing:.8px;font-family:'JetBrains Mono';}
+.mp-bs-row{display:grid;grid-template-columns:28px 1fr 60px 80px 70px 80px 60px 80px 80px;gap:0;border-bottom:1px solid var(--rule-light);transition:background .12s;}
+.mp-bs-row:last-child{border-bottom:none;}
+.mp-bs-row.header{background:var(--bg-warm);border-bottom:1px solid var(--rule);}
+.mp-bs-cell{padding:9px 14px;font-size:12px;display:flex;align-items:center;}
+.mp-bs-row.header .mp-bs-cell{font-size:10px;font-weight:600;color:var(--ink-4);letter-spacing:.8px;text-transform:uppercase;font-family:'JetBrains Mono';}
+.mp-bs-cell.num{font-family:'JetBrains Mono';justify-content:flex-end;font-size:11px;}
+.mp-bs-cell.bar-cell{padding:9px 12px;}
+.mp-bs-bar-wrap{height:6px;background:var(--rule);border-radius:3px;overflow:hidden;width:100%;}
+.mp-bs-bar{height:100%;border-radius:3px;transition:width .5s ease;}
+.mp-bs-total-row{display:grid;grid-template-columns:28px 1fr 60px 80px 70px 80px 60px 80px 80px;gap:0;background:var(--orange-wash);border-top:2px solid var(--orange);padding:2px 0;}
+.mp-bs-total-row .mp-bs-cell{font-weight:600;font-size:12px;}
+.mp-flow-card{margin-bottom:0;}
+.mp-flow-outer{overflow-x:auto;overflow-y:visible;width:100%;-webkit-overflow-scrolling:touch;}
+.flow-wrap{display:inline-block;min-width:100%;width:max-content;}
+.flow-header-row{display:flex;border-bottom:2px solid var(--rule);background:var(--bg-warm);position:sticky;top:0;z-index:10;width:100%;}
+.flow-ch-label{width:180px;flex-shrink:0;padding:8px 14px;font-size:10px;font-weight:600;color:var(--ink-4);text-transform:uppercase;letter-spacing:.8px;font-family:'JetBrains Mono';border-right:1px solid var(--rule);}
+.flow-weeks-header{display:flex;flex:1;}
+.flow-wk-hdr{width:32px;flex-shrink:0;text-align:center;padding:4px 2px;font-size:9px;color:var(--ink-4);font-family:'JetBrains Mono';border-right:1px solid var(--rule-light);}
+.flow-wk-hdr.month-start{border-left:2px solid var(--rule);background:var(--bg);}
+.flow-wk-hdr.month-start .wk-month{font-size:8px;font-weight:600;color:var(--orange);display:block;letter-spacing:.5px;text-transform:uppercase;}
+.flow-row{display:flex;border-bottom:1px solid var(--rule-light);transition:background .1s;width:100%;}
+.flow-row:hover{background:var(--orange-wash);}
+.flow-row-label{width:180px;flex-shrink:0;padding:8px 14px;border-right:1px solid var(--rule);display:flex;align-items:center;gap:8px;}
+.flow-row-name{font-size:12px;font-weight:500;color:var(--ink-2);}
+.flow-row-type{font-size:10px;color:var(--ink-4);}
+.flow-cells{display:flex;}
+.flow-cell{width:32px;flex-shrink:0;height:36px;border-right:1px solid var(--rule-light);position:relative;cursor:default;}
+.flow-cell.active{cursor:pointer;}
+.flow-cell.active:hover .flow-cell-tip{display:block;}
+.flow-bar{position:absolute;inset:3px 2px;border-radius:3px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.flow-bar-amt{font-size:8px;font-family:'JetBrains Mono';font-weight:500;color:rgba(255,255,255,.9);white-space:nowrap;padding:0 2px;}
+.flow-cell-tip{display:none;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;padding:5px 8px;border-radius:5px;white-space:nowrap;z-index:200;font-family:'JetBrains Mono';pointer-events:none;box-shadow:var(--shadow-md);}
+.flow-cell-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:3px solid transparent;border-top-color:var(--ink);}
+.flow-total-row{display:flex;background:var(--bg-warm);border-top:2px solid var(--rule);width:100%;}
+.flow-total-label{width:180px;flex-shrink:0;padding:8px 14px;font-size:11px;font-weight:600;color:var(--ink-2);border-right:1px solid var(--rule);font-family:'JetBrains Mono';}
+.flow-total-cells{display:flex;}
+.flow-total-cell{width:32px;flex-shrink:0;height:30px;border-right:1px solid var(--rule-light);display:flex;align-items:center;justify-content:center;font-size:8px;font-family:'JetBrains Mono';color:var(--ink-4);}
+.flow-total-cell.has-spend{color:var(--orange);font-weight:600;}
+.flow-filter-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--rule-light);background:var(--bg-warm);flex-wrap:wrap;}
+.flow-filter-label{font-size:11px;font-weight:500;color:var(--ink-3);}
+.flow-filter-select{padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'Figtree';font-size:12px;color:var(--ink);background:var(--surface);cursor:pointer;}
+.flow-filter-select:focus{outline:none;border-color:var(--orange);}
+.flow-filter-note{font-size:10px;color:var(--ink-4);font-style:italic;margin-left:auto;}
+.mp-monthly-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.mp-monthly-lbl{width:36px;font-size:11px;font-family:'JetBrains Mono';color:var(--ink-4);text-align:right;flex-shrink:0;}
+.mp-monthly-track{flex:1;height:28px;background:var(--rule-light);border-radius:4px;overflow:hidden;position:relative;}
+.mp-monthly-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:500;font-family:'JetBrains Mono';transition:width .5s ease;}
+.mp-monthly-amt{width:60px;font-family:'JetBrains Mono';font-size:11px;color:var(--ink-3);text-align:right;flex-shrink:0;}
+.fn-row{padding:10px 0;border-bottom:1px solid var(--rule-light);display:grid;grid-template-columns:160px 1fr;}
+.fn-row:last-child{border-bottom:none;}
+.fn-ch{font-size:12px;font-weight:500;color:var(--ink-2);display:flex;align-items:flex-start;gap:8px;padding-top:1px;}
+.fn-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;margin-top:3px;}
+.fn-text{font-size:12px;color:var(--ink-3);line-height:1.65;}
+.fn-text strong{color:var(--ink-2);font-weight:500;}
+.mp-legend{background:var(--bg-warm);border:1px solid var(--rule);border-radius:var(--r);padding:16px 20px;margin-bottom:32px;}
+.mp-legend-title{font-size:11px;font-weight:600;color:var(--ink-3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;font-family:'JetBrains Mono';}
+#mp-legend-items{display:flex;flex-wrap:wrap;gap:12px;}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink-3);}
+.leg-swatch{width:14px;height:10px;border-radius:2px;}
+
+/* ── CONFIDENCE LEGEND BAR ── */
+.conf-bar{display:flex;align-items:center;gap:20px;padding:10px 16px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-sm);margin-bottom:20px;box-shadow:var(--shadow-sm);}
+.conf-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink-3);font-weight:400;}
+.conf-dot{width:8px;height:8px;border-radius:50%;}
+.conf-c{background:var(--conf-confirmed);}
+.conf-b{background:var(--conf-bench);}
+.conf-e{background:var(--conf-est);}
+.conf-bar-note{margin-left:auto;font-size:11px;color:var(--ink-4);font-style:italic;font-family:'Playfair Display';}
+
+/* ── MISC ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.card{animation:fadeUp .35s ease both;}
+.card:nth-child(2){animation-delay:.06s;}
+.hm{animation:fadeUp .35s ease both;}
+.hm:nth-child(1){animation-delay:.00s;}.hm:nth-child(2){animation-delay:.04s;}
+.hm:nth-child(3){animation-delay:.08s;}.hm:nth-child(4){animation-delay:.12s;}.hm:nth-child(5){animation-delay:.16s;}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(232,88,26,.2);border-top-color:var(--orange);border-radius:50%;animation:rot .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes rot{to{transform:rotate(360deg);}}
+.footer{text-align:center;padding:28px;color:var(--ink-4);font-size:10px;letter-spacing:1.2px;text-transform:uppercase;border-top:1px solid var(--rule);margin-top:32px;font-family:'JetBrains Mono';}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--rule);border-radius:3px;}
+input[type=number]{-moz-appearance:textfield;}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
+.tooltip-wrap{position:relative;display:inline-flex;align-items:center;}
+.tooltip-wrap:hover .tooltip{display:block;}
+.tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:11px;padding:6px 10px;border-radius:6px;white-space:nowrap;z-index:300;font-family:'JetBrains Mono';pointer-events:none;box-shadow:var(--shadow-md);}
+.tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--ink);}
+.mkt-viz-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.mkt-viz-flag{font-size:16px;flex-shrink:0;}
+.mkt-viz-name{font-size:11px;color:var(--ink-3);width:120px;flex-shrink:0;}
+.mkt-viz-track{flex:1;height:20px;background:var(--rule-light);border-radius:3px;overflow:hidden;}
+.mkt-viz-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:500;min-width:4px;}
+.mkt-viz-amt{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-3);min-width:48px;text-align:right;}
+.mkt-viz-divider{height:1px;background:var(--rule);margin:12px 0;}
+.tier-fly{background:var(--blue-pale);color:var(--blue);padding:1px 6px;border-radius:3px;font-size:9px;font-family:'JetBrains Mono';}
+.tier-drive{background:var(--green-pale);color:var(--green);padding:1px 6px;border-radius:3px;font-size:9px;font-family:'JetBrains Mono';}
+.tier-core{background:var(--orange-pale);color:var(--orange);padding:1px 6px;border-radius:3px;font-size:9px;font-family:'JetBrains Mono';}
+.tier-exp{background:var(--slate-pale);color:var(--slate);padding:1px 6px;border-radius:3px;font-size:9px;font-family:'JetBrains Mono';}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="logo">
+      <div class="logo-mk">M</div>
+      <div>
+        <div class="logo-nm">MMGY</div>
+        <span class="logo-sb">Media Planning System</span>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="hdr-ttl" id="hdr-client-name">Configure a client to begin</div>
+  </div>
+  <div class="hdr-r">
+    <span class="pill pill-o" id="hdr-budget-pill">—</span>
+    <span class="pill pill-b" id="hdr-vertical-pill">—</span>
+    <button class="card-act" onclick="switchView('setup')" style="font-size:12px;padding:6px 12px;border:1px solid var(--rule);border-radius:var(--r-xs);background:var(--surface);">⚙ Edit Setup</button>
+  </div>
+</div>
+
+<!-- APP NAV -->
+<div class="app-nav">
+  <div class="app-nav-inner">
+    <button class="app-tab active" id="nav-setup" onclick="switchView('setup')">
+      <span class="app-tab-icon">⚙</span> Setup
+    </button>
+    <button class="app-tab locked" id="nav-optimizer" onclick="switchView('optimizer')">
+      <span class="app-tab-icon">◎</span> Optimizer
+    </button>
+    <button class="app-tab locked" id="nav-markets" onclick="switchView('markets')">
+      <span class="app-tab-icon">◈</span> Market Budgets
+      <span class="mp-badge" id="mkt-badge" style="display:none;">Applied</span>
+    </button>
+    <button class="app-tab locked" id="nav-mediaplan" onclick="switchView('mediaplan')">
+      <span class="app-tab-icon">≡</span> Media Plan
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SETUP VIEW
+════════════════════════════════════════════════════════ -->
+<div class="app" id="view-setup">
+
+  <div style="max-width:900px;margin:0 auto;">
+
+    <!-- CLIENT INFO -->
+    <div style="margin-bottom:8px;">
+      <div class="setup-label">
+        <span>Client Information</span>
+        <div class="setup-label-line"></div>
+      </div>
+    </div>
+    <div class="setup-grid">
+      <div class="card" style="padding:20px 24px;">
+        <div class="setup-field">
+          <label>Client Name</label>
+          <input type="text" id="cfg-client-name" placeholder="e.g. Kennedy Space Center" oninput="onSetupChange()">
+        </div>
+        <div class="setup-field">
+          <label>Client Vertical</label>
+          <select id="cfg-vertical" onchange="onVerticalChange()">
+            <option value="destination">Destination / DMO</option>
+            <option value="attraction">Attraction / Theme Park</option>
+            <option value="hotel">Hotel Brand</option>
+            <option value="cruise">Cruise Line</option>
+            <option value="airline">Airline</option>
+            <option value="other">Other Travel Brand</option>
+          </select>
+        </div>
+        <div class="setup-field">
+          <label>Total Working Media Budget ($M)</label>
+          <input type="number" id="cfg-budget" value="10" min="0.5" max="500" step="0.5" oninput="onSetupChange()">
+          <div class="hint">Annual working media only — excludes agency fees, production, and tech.</div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px 24px;">
+        <div class="setup-field">
+          <label>Economic Performance Model</label>
+          <select id="cfg-model-type" onchange="onModelTypeChange()">
+            <option value="roas">ROAS — maximize revenue vs. spend</option>
+            <option value="impact">Impact Multiplier — tourism economic impact</option>
+          </select>
+        </div>
+        <div id="cfg-roas-fields">
+          <div class="setup-field">
+            <label>Blended ROAS Target</label>
+            <input type="number" id="cfg-roas-target" value="8" min="1" max="100" step="0.5" oninput="onSetupChange()">
+            <div class="hint">Expected revenue return per $1 of media spend across all channels blended.</div>
+          </div>
+          <div class="setup-field">
+            <label>Avg Transaction Value ($)</label>
+            <input type="number" id="cfg-transaction-value" value="100" min="1" step="1" oninput="onSetupChange()">
+          </div>
+          <div class="setup-field">
+            <label>Transaction Label</label>
+            <input type="text" id="cfg-transaction-label" value="Purchase" placeholder="e.g. Ticket, Booking, Room Night" oninput="onSetupChange()">
+          </div>
+        </div>
+        <div id="cfg-impact-fields" style="display:none;">
+          <div class="setup-field">
+            <label>Economic Impact Anchor ($ per $1 of media)</label>
+            <input type="number" id="cfg-impact-anchor" value="434" min="1" step="1" oninput="onSetupChange()">
+          </div>
+          <div class="setup-field">
+            <label>Anchor Source / Citation</label>
+            <input type="text" id="cfg-impact-source" placeholder="e.g. Tourism Economics 2024" oninput="onSetupChange()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHANNEL ACTIVATION -->
+    <div style="margin-bottom:8px;margin-top:8px;">
+      <div class="setup-label">
+        <span>Active Channel Mix</span>
+        <div class="setup-label-line"></div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Select the channels in your client's media plan. Inactive channels are excluded from the optimizer entirely.</div>
+    </div>
+    <div class="card" style="padding:20px 24px;margin-bottom:24px;">
+      <div class="ch-toggle-grid" id="ch-toggle-grid"></div>
+    </div>
+
+    <!-- SEASONALITY -->
+    <div style="margin-bottom:8px;">
+      <div class="setup-label">
+        <span>Seasonality Index</span>
+        <div class="setup-label-line"></div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Set the relative investment weight per month. Higher = more spend. All months are relative to each other — the optimizer distributes budget proportionally.</div>
+    </div>
+    <div class="card" style="padding:20px 24px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <span style="font-size:12px;font-weight:500;color:var(--ink-2);">Preset:</span>
+        <select style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'Figtree';font-size:12px;background:var(--surface);" onchange="applySeasonPreset(this.value)">
+          <option value="">— Custom —</option>
+          <option value="orlando">Orlando / Sun & Beach (peak Q1+Q4)</option>
+          <option value="ski">Ski / Winter (peak Dec–Mar)</option>
+          <option value="summer">Summer / Coastal (peak Jun–Aug)</option>
+          <option value="urban">Urban / City (even, slight spring/fall bias)</option>
+          <option value="business">Business Travel (weekday-heavy, even months)</option>
+          <option value="alwayson">Always-On (flat)</option>
+        </select>
+      </div>
+      <div id="season-editor-wrap"></div>
+    </div>
+
+    <!-- MARKETS -->
+    <div style="margin-bottom:8px;">
+      <div class="setup-label">
+        <span>Target Markets</span>
+        <div class="setup-label-line"></div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Select markets from all 210 Nielsen DMAs. Assign a score (1–100) to weight budget allocation — higher score = larger share.</div>
+    </div>
+    <div class="card" style="padding:20px 24px;margin-bottom:24px;">
+
+      <!-- DMA PICKER -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--ink-2);margin-bottom:8px;">Browse &amp; Select DMAs</div>
+
+          <!-- filter + quick-select toolbar -->
+          <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+            <input id="dma-filter" type="text" placeholder="Filter by name…"
+              style="flex:1;min-width:120px;padding:6px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'Figtree';font-size:12px;background:var(--surface);"
+              oninput="filterDMAList(this.value)">
+            <button onclick="quickSelectDMAs('top10')"  style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--ink-2);white-space:nowrap;">Top 10</button>
+            <button onclick="quickSelectDMAs('top25')"  style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--ink-2);white-space:nowrap;">Top 25</button>
+            <button onclick="quickSelectDMAs('top50')"  style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--ink-2);white-space:nowrap;">Top 50</button>
+            <button onclick="quickSelectDMAs('clear')"  style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--red);white-space:nowrap;">Clear</button>
+          </div>
+
+          <!-- grouped multi-select -->
+          <select id="dma-multiselect" multiple
+            style="width:100%;height:260px;border:1px solid var(--rule);border-radius:var(--r-sm);font-family:'Figtree';font-size:12px;color:var(--ink);background:var(--surface);padding:4px 0;"
+            onchange="onDMAMultiSelect()"></select>
+          <div style="font-size:10px;color:var(--ink-4);margin-top:5px;font-style:italic;">Hold Ctrl / Cmd to select multiple. Click a selected market to deselect.</div>
+        </div>
+
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--ink-2);margin-bottom:6px;">Options</div>
+          <div class="setup-field" style="margin-bottom:10px;">
+            <label>International Visitor % (passive — no media spend)</label>
+            <input type="number" id="cfg-intl-pct" value="0" min="0" max="80" step="1" oninput="onSetupChange()">
+            <div class="hint">Visitors from outside the US who come without media influence. Excluded from market budget allocation.</div>
+          </div>
+          <div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:var(--r-sm);border:1px solid var(--rule);">
+            <div style="font-size:11px;font-weight:600;color:var(--ink-3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;font-family:'JetBrains Mono';">Tiers</div>
+            <div style="font-size:11px;color:var(--ink-4);line-height:2;">
+              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Major</span>#1–10 · 2M+ HH<br>
+              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Large</span>#11–30 · 1–2M HH<br>
+              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Medium</span>#31–75 · 500k–1M HH<br>
+              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Small</span>#76–150 · 100k–500k HH<br>
+              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Regional</span>#151–210 · &lt;100k HH
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- selected market score editor -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:12px;font-weight:500;color:var(--ink-2);">Selected Markets &amp; Scores</div>
+          <div style="font-size:11px;color:var(--ink-4);font-family:'JetBrains Mono';" id="mkt-score-total">Score total: 0</div>
+        </div>
+        <div class="mkt-selected-list" id="mkt-selected-list">
+          <div style="font-size:12px;color:var(--ink-4);font-style:italic;padding:12px 0;">No markets selected yet.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LAUNCH -->
+    <div id="launch-error" style="display:none;margin-bottom:12px;padding:10px 16px;background:var(--red-pale);border:1px solid var(--red);border-radius:var(--r-sm);font-size:13px;color:var(--red);font-weight:500;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:12px;padding-bottom:40px;">
+      <button class="setup-cta" onclick="launchTool()">Launch Optimizer →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     OPTIMIZER VIEW
+════════════════════════════════════════════════════════ -->
+<div class="app" id="view-optimizer" style="display:none;">
+
+  <!-- CONFIDENCE LEGEND -->
+  <div class="conf-bar">
+    <div class="conf-item"><div class="conf-dot conf-c"></div>Confirmed data</div>
+    <div class="conf-item"><div class="conf-dot conf-b"></div>Benchmarked</div>
+    <div class="conf-item"><div class="conf-dot conf-e"></div>Estimated</div>
+    <div class="conf-bar-note" id="conf-bar-anchor-note"></div>
+  </div>
+
+  <!-- HERO TILES -->
+  <div class="hero" id="hero-tiles"></div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- CHANNEL MATRIX -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Channel Allocation Matrix</div>
+        <button class="card-act" onclick="resetAll()">Reset to baseline</button>
+      </div>
+      <div class="tabs" id="tab-bar">
+        <div class="tab active" data-pane="channels">All Channels</div>
+        <div class="tab" data-pane="assumptions">Assumptions</div>
+        <div class="tab" data-pane="sensitivity">Sensitivity</div>
+      </div>
+      <div class="tab-pane active" id="pane-channels">
+        <div id="channel-list"></div>
+      </div>
+      <div class="tab-pane" id="pane-assumptions">
+        <div id="assumption-list"></div>
+      </div>
+      <div class="tab-pane" id="pane-sensitivity">
+        <div id="sensitivity-list"></div>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head"><div class="card-title">Optimizer Controls</div></div>
+        <div class="ctrl-body">
+
+          <div class="ctrl-group">
+            <div class="ctrl-label">
+              <span class="ctrl-label-txt">Total Budget</span>
+              <span class="ctrl-val" id="v-budget">—</span>
+            </div>
+            <input type="range" id="s-budget" min="0.5" max="200" step="0.5" oninput="onBudget(this.value)">
+            <div class="range-lbls"><span>$0.5M</span><span>$200M</span></div>
+          </div>
+
+          <div class="ctrl-group">
+            <div class="ctrl-label">
+              <span class="ctrl-label-txt">Optimization Objective</span>
+            </div>
+            <div class="seg" id="obj-seg">
+              <button class="seg-btn active" onclick="setObj('roi',this)">Econ ROI</button>
+              <button class="seg-btn" onclick="setObj('cpm',this)">Min CPM</button>
+              <button class="seg-btn" onclick="setObj('reach',this)">Max Reach</button>
+              <button class="seg-btn" onclick="setObj('perf',this)">Performance</button>
+            </div>
+          </div>
+
+          <div class="ctrl-group">
+            <div class="ctrl-label">
+              <span class="ctrl-label-txt">Shoulder Season Push</span>
+              <span class="ctrl-val" id="v-shoulder">Standard</span>
+            </div>
+            <input type="range" id="s-shoulder" min="0" max="100" value="30" oninput="onShoulder(this.value)">
+            <div class="range-lbls"><span>None</span><span>Maximum</span></div>
+          </div>
+
+          <div class="ctrl-group" id="awareness-floor-group">
+            <div class="ctrl-label">
+              <span class="ctrl-label-txt">Awareness Channel Floor</span>
+              <span class="ctrl-val"><span id="v-awareness">20</span>% · actual: <span id="v-awareness-actual" style="color:var(--orange);">—</span></span>
+            </div>
+            <input type="range" id="s-awareness" min="0" max="60" value="20" oninput="onAwareness(this.value)">
+            <div class="range-lbls"><span>0%</span><span>60%</span></div>
+            <div id="awareness-warning" style="display:none;margin-top:6px;padding:6px 10px;background:var(--amber-pale);border-radius:var(--r-xs);font-size:10px;color:var(--amber);font-weight:500;">
+              ⚠ Current allocation is below awareness floor — optimizer will enforce minimum.
+            </div>
+          </div>
+
+          <!-- Economic Impact Summary -->
+          <div id="economic-summary-panel" style="background:var(--orange-wash);border:1px solid rgba(232,88,26,.15);border-radius:var(--r-sm);padding:14px;margin-bottom:20px;">
+            <div style="font-size:11px;font-weight:600;color:var(--orange);letter-spacing:.5px;margin-bottom:12px;text-transform:uppercase;" id="econ-panel-title">Performance Summary</div>
+            <div style="font-family:'JetBrains Mono';font-size:11px;color:var(--ink-3);line-height:2.2;" id="econ-panel-body"></div>
+          </div>
+
+          <button class="opt-btn" id="opt-btn" onclick="runOptimizer()">Run Optimizer</button>
+
+          <div class="results-section" id="results-sec" style="display:none;">
+            <div class="results-title">Allocation shifts</div>
+            <div id="results-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /main-grid -->
+
+  <!-- AI NARRATIVE -->
+  <div class="narrative" id="narrative">
+    <div class="narr-eye"><div class="pulse"></div>Planning Rationale</div>
+    <div class="narr-body" id="narr-body"></div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <div class="disc-icon">ℹ</div>
+    <div class="disc-body" id="disclaimer-body"></div>
+  </div>
+
+  <!-- PERFORMANCE PROJECTIONS -->
+  <div class="section-label">
+    <div class="sl-line"></div>
+    <div class="sl-text">Performance Projections</div>
+    <div class="sl-line"></div>
+  </div>
+
+  <div class="bottom-grid">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Seasonal Investment Index</div>
+        <span style="font-size:11px;color:var(--ink-4);">From client seasonality config</span>
+      </div>
+      <div class="season-wrap">
+        <div class="season-bars" id="season-bars"></div>
+        <div id="season-lbls" style="display:grid;grid-template-columns:repeat(12,1fr);gap:5px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Channel Economic Return</div>
+        <span style="font-size:11px;color:var(--ink-4);" id="roi-table-subtitle"></span>
+      </div>
+      <div id="roi-table" style="padding:0;"></div>
+    </div>
+  </div>
+
+</div><!-- /view-optimizer -->
+
+<!-- MARKET BUDGET VIEW (injected dynamically) -->
+<div class="app" id="view-markets" style="display:none;"></div>
+
+<!-- MEDIA PLAN VIEW -->
+<div class="app" id="view-mediaplan" style="display:none;">
+  <div class="mp-toolbar">
+    <div class="mp-toolbar-left">
+      <div>
+        <div class="mp-doc-title" id="mp-doc-title">—</div>
+        <div class="mp-doc-sub" id="mp-doc-sub">—</div>
+      </div>
+    </div>
+    <div class="mp-toolbar-right">
+      <div class="mp-ctrl-group">
+        <label class="mp-ctrl-label">Plan Year</label>
+        <select class="mp-select" id="mp-year" onchange="generatePlan()">
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+        </select>
+      </div>
+      <div class="mp-ctrl-group">
+        <label class="mp-ctrl-label">Flight</label>
+        <select class="mp-select" id="mp-flight" onchange="generatePlan()">
+          <option value="full">Full Year</option>
+          <option value="h1">H1 Only (Jan–Jun)</option>
+          <option value="h2">H2 Only (Jul–Dec)</option>
+        </select>
+      </div>
+      <button class="gen-btn" id="gen-btn" onclick="generatePlan()">Generate Media Plan</button>
+      <button class="print-btn" onclick="printPlan()" id="print-btn" style="display:none;">Export PDF</button>
+    </div>
+  </div>
+  <div id="mp-prompt" class="mp-empty">
+    <div class="mp-empty-icon">≡</div>
+    <div class="mp-empty-title">Ready to generate</div>
+    <div class="mp-empty-sub">Configure your budget and channel allocations in the Optimizer tab, then click Generate Media Plan.</div>
+    <button class="gen-btn" onclick="generatePlan()" style="margin-top:20px;">Generate Media Plan</button>
+  </div>
+  <div id="mp-document" style="display:none;">
+    <div class="mp-header-block" id="mp-header-block"></div>
+    <div class="mp-section-title">Budget Summary by Channel</div>
+    <div class="card" style="margin-bottom:20px;"><div id="mp-budget-summary"></div></div>
+    <div class="mp-section-title" id="mp-market-title" style="display:none;">Budget by Market</div>
+    <div class="card" style="margin-bottom:20px;display:none;" id="mp-market-section"></div>
+    <div class="mp-section-title" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Broadcast Week Flow Chart</span>
+      <span style="font-size:11px;color:var(--ink-4);font-weight:400;font-style:italic;">Week of Monday · Shaded = active flight · $ = weekly budget</span>
+    </div>
+    <div class="card mp-flow-card">
+      <div class="flow-filter-bar">
+        <span class="flow-filter-label">View market:</span>
+        <select class="flow-filter-select" id="flow-market-filter" onchange="applyFlowFilter()">
+          <option value="all">All Markets (Total Budget)</option>
+        </select>
+        <span class="flow-filter-note" id="flow-filter-note">Showing full budget</span>
+      </div>
+      <div class="mp-flow-outer"><div id="mp-flow"></div></div>
+    </div>
+    <div class="mp-section-title" style="margin-top:20px;">Monthly Budget Distribution</div>
+    <div class="card" style="margin-bottom:20px;padding:20px 24px;"><div id="mp-monthly-chart"></div></div>
+    <div class="mp-section-title">Flight Notes &amp; Strategic Rationale</div>
+    <div class="card" style="margin-bottom:20px;"><div id="mp-notes" style="padding:20px 24px;"></div></div>
+    <div class="mp-legend">
+      <div class="mp-legend-title">Legend</div>
+      <div id="mp-legend-items"></div>
+      <div style="font-size:10px;color:var(--ink-4);margin-top:10px;font-style:italic;" id="mp-footer-note"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">MMGY · Media Planning System · Confidential · All assumptions labeled by source confidence</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// ── MASTER CHANNEL ROSTER ────────────────────────────────────────
+// All possible channels across all client types.
+// Each client activates a subset via Setup.
+// ══════════════════════════════════════════════════════════════════
+const MASTER_CHANNELS = [
+  // id, name, type, funnel, color, cpmDef, roiWeight, minDef, maxDef, belowBase, cpmConf, roiConf, cpmSrc, roiSrc, flightDefault
+  { id:'search',  name:'Paid Search',          type:'Digital · Lower Funnel',  funnel:'lower', color:'#E8581A', cpmDef:4.5,  roiWeight:3.50, minDef:5,  maxDef:15, belowBase:'rising', cpmConf:'benchmarked', roiConf:'benchmarked', cpmSrc:'Google Travel Benchmarks 2024', roiSrc:'Sojern State of Travel Advertising 2024', flight:[1,1,1,1,1,1,1,1,1,1,1,1] },
+  { id:'ota',     name:'OTA Partnerships',      type:'Digital · Lower Funnel',  funnel:'lower', color:'#C44A10', cpmDef:6.0,  roiWeight:2.80, minDef:3,  maxDef:20, belowBase:'rising', cpmConf:'estimated',   roiConf:'benchmarked', cpmSrc:'MMGY estimate', roiSrc:'Expedia/Booking conversion data', flight:[1,1,1,1,1,1,1,0,0,1,1,1] },
+  { id:'social',  name:'Paid Social',           type:'Digital · Mid Funnel',    funnel:'mid',   color:'#F47B47', cpmDef:9.0,  roiWeight:2.10, minDef:8,  maxDef:25, belowBase:'rising', cpmConf:'benchmarked', roiConf:'benchmarked', cpmSrc:'Meta Travel Vertical Benchmarks Q3 2025', roiSrc:'Meta Travel insights', flight:[1,1,1,1,1,1,1,1,1,1,1,1] },
+  { id:'dv360',   name:'Programmatic',  type:'Digital · Mid Funnel',    funnel:'mid',   color:'#FAA07A', cpmDef:5.5,  roiWeight:1.74, minDef:5,  maxDef:20, belowBase:'rising', cpmConf:'benchmarked', roiConf:'estimated',   cpmSrc:'Programmatic campaign actuals', roiSrc:'MMGY estimate', flight:[1,1,1,1,1,1,1,1,1,1,1,1] },
+  { id:'digvid',  name:'Digital Video',         type:'Digital · Upper Funnel',  funnel:'upper', color:'#2D5CC8', cpmDef:11.0, roiWeight:1.48, minDef:5,  maxDef:20, belowBase:'flat',   cpmConf:'benchmarked', roiConf:'estimated',   cpmSrc:'Industry video benchmark', roiSrc:'Upper funnel attribution — estimated', flight:[1,1,1,1,1,0,0,1,1,1,1,1] },
+  { id:'ctvdom',  name:'CTV / Streaming TV',    type:'Digital · Upper Funnel',  funnel:'upper', color:'#1A3B8C', cpmDef:14.0, roiWeight:1.36, minDef:5,  maxDef:20, belowBase:'cliff',  cpmConf:'benchmarked', roiConf:'estimated',   cpmSrc:'Streaming TV travel vertical avg 2024', roiSrc:'MMGY estimate', flight:[1,1,1,1,0,0,0,1,1,1,1,1] },
+  { id:'tv',      name:'Broadcast TV',          type:'Traditional · Awareness', funnel:'upper', color:'#64748B', cpmDef:19.0, roiWeight:0.98, minDef:5,  maxDef:25, belowBase:'cliff',  cpmConf:'estimated',   roiConf:'benchmarked', cpmSrc:'Broadcast estimate', roiSrc:'W5 awareness lift data', flight:[1,1,1,0,0,0,0,0,1,1,0,0] },
+  { id:'audio',   name:'Streaming Audio',       type:'Digital · Mid Funnel',    funnel:'mid',   color:'#4A9EE8', cpmDef:7.5,  roiWeight:1.23, minDef:3,  maxDef:15, belowBase:'flat',   cpmConf:'benchmarked', roiConf:'estimated',   cpmSrc:'Spotify/iHeart travel benchmarks', roiSrc:'MMGY estimate', flight:[0,1,1,1,1,1,0,0,1,1,1,0] },
+  { id:'ooh',     name:'Out of Home',           type:'Traditional · Awareness', funnel:'upper', color:'#94A3B8', cpmDef:30.0, roiWeight:1.11, minDef:3,  maxDef:20, belowBase:'cliff',  cpmConf:'estimated',   roiConf:'estimated',   cpmSrc:'Effective reach CPM — normalized from showings basis', roiSrc:'OOH attribution estimated', flight:[0,1,1,0,0,0,0,0,0,0,1,1] },
+  { id:'print',   name:'Print / Editorial',     type:'Traditional · Awareness', funnel:'upper', color:'#CBD5E1', cpmDef:22.0, roiWeight:0.60, minDef:0,  maxDef:8,  belowBase:'flat',   cpmConf:'estimated',   roiConf:'estimated',   cpmSrc:'Editorial rate card estimate', roiSrc:'Brand adjacency value only', flight:[0,1,0,0,0,0,0,0,0,0,1,0] },
+  { id:'metasearch', name:'Metasearch',         type:'Digital · Lower Funnel',  funnel:'lower', color:'#B45309', cpmDef:3.5,  roiWeight:3.20, minDef:5,  maxDef:25, belowBase:'rising', cpmConf:'estimated',   roiConf:'benchmarked', cpmSrc:'Google Hotel Ads / Trivago benchmarks', roiSrc:'High-intent last-click channel', flight:[1,1,1,1,1,1,1,1,1,1,1,1] },
+  { id:'email',   name:'Email / CRM',           type:'Owned · Lower Funnel',    funnel:'lower', color:'#059669', cpmDef:1.5,  roiWeight:4.00, minDef:0,  maxDef:15, belowBase:'flat',   cpmConf:'estimated',   roiConf:'estimated',   cpmSrc:'Internal send cost estimate', roiSrc:'CRM re-engagement estimate', flight:[1,1,1,1,1,1,1,1,1,1,1,1] },
+];
+
+// ══════════════════════════════════════════════════════════════════
+// ── ALL 210 NIELSEN DMAS ─────────────────────────────────────────
+// rank, id, name, tvHomes (2024-25 season), adults18+ estimate
+// Adults = tvHomes × 2.5 (Nielsen household size estimate)
+// ══════════════════════════════════════════════════════════════════
+const ALL_DMAS = [
+  {rank:1,  id:'nyc',  name:'New York',                     tvHomes:7494510},
+  {rank:2,  id:'lax',  name:'Los Angeles',                  tvHomes:5835790},
+  {rank:3,  id:'chi',  name:'Chicago',                      tvHomes:3654750},
+  {rank:4,  id:'dfw',  name:'Dallas–Fort Worth',            tvHomes:3100000},
+  {rank:5,  id:'phl',  name:'Philadelphia',                 tvHomes:3145920},
+  {rank:6,  id:'hou',  name:'Houston',                      tvHomes:2750000},
+  {rank:7,  id:'atl',  name:'Atlanta',                      tvHomes:2758170},
+  {rank:8,  id:'was',  name:'Washington DC',                tvHomes:2630640},
+  {rank:9,  id:'bos',  name:'Boston',                       tvHomes:2584460},
+  {rank:10, id:'sfo',  name:'San Francisco–Oakland',        tvHomes:2650000},
+  {rank:11, id:'tpa',  name:'Tampa–St. Petersburg',         tvHomes:2100000},
+  {rank:12, id:'phx',  name:'Phoenix',                      tvHomes:2050000},
+  {rank:13, id:'sea',  name:'Seattle–Tacoma',               tvHomes:2000000},
+  {rank:14, id:'dtw',  name:'Detroit',                      tvHomes:1940750},
+  {rank:15, id:'orl',  name:'Orlando–Daytona Beach',        tvHomes:1820000},
+  {rank:16, id:'msp',  name:'Minneapolis–St. Paul',         tvHomes:1886680},
+  {rank:17, id:'den',  name:'Denver',                       tvHomes:1750000},
+  {rank:18, id:'mia',  name:'Miami–Fort Lauderdale',        tvHomes:1700000},
+  {rank:19, id:'cle',  name:'Cleveland–Akron',              tvHomes:1560000},
+  {rank:20, id:'sac',  name:'Sacramento–Stockton',          tvHomes:1480000},
+  {rank:21, id:'clt',  name:'Charlotte',                    tvHomes:1350000},
+  {rank:22, id:'rdu',  name:'Raleigh–Durham',               tvHomes:1290000},
+  {rank:23, id:'por',  name:'Portland OR',                  tvHomes:1250000},
+  {rank:24, id:'stl',  name:'St. Louis',                    tvHomes:1220000},
+  {rank:25, id:'ind',  name:'Indianapolis',                 tvHomes:1180000},
+  {rank:26, id:'nas',  name:'Nashville',                    tvHomes:1140000},
+  {rank:27, id:'pit',  name:'Pittsburgh',                   tvHomes:1100000},
+  {rank:28, id:'slc',  name:'Salt Lake City',               tvHomes:1050000},
+  {rank:29, id:'bal',  name:'Baltimore',                    tvHomes:1030000},
+  {rank:30, id:'san',  name:'San Diego',                    tvHomes:1020000},
+  {rank:31, id:'sao',  name:'San Antonio',                  tvHomes:980000},
+  {rank:32, id:'hfd',  name:'Hartford–New Haven',           tvHomes:960000},
+  {rank:33, id:'ksc',  name:'Kansas City',                  tvHomes:940000},
+  {rank:34, id:'aus',  name:'Austin TX',                    tvHomes:920000},
+  {rank:35, id:'col',  name:'Columbus OH',                  tvHomes:900000},
+  {rank:36, id:'gsp',  name:'Greenville–Spartanburg',       tvHomes:870000},
+  {rank:37, id:'cin',  name:'Cincinnati',                   tvHomes:850000},
+  {rank:38, id:'mil',  name:'Milwaukee',                    tvHomes:830000},
+  {rank:39, id:'wpb',  name:'West Palm Beach',              tvHomes:810000},
+  {rank:40, id:'lvs',  name:'Las Vegas',                    tvHomes:800000},
+  {rank:41, id:'jax',  name:'Jacksonville FL',              tvHomes:780000},
+  {rank:42, id:'hrb',  name:'Harrisburg–Lancaster',         tvHomes:760000},
+  {rank:43, id:'grr',  name:'Grand Rapids–Kalamazoo',       tvHomes:740000},
+  {rank:44, id:'orf',  name:'Norfolk–Portsmouth',           tvHomes:720000},
+  {rank:45, id:'bhm',  name:'Birmingham AL',                tvHomes:700000},
+  {rank:46, id:'gso',  name:'Greensboro–Winston-Salem',     tvHomes:680000},
+  {rank:47, id:'okc',  name:'Oklahoma City',                tvHomes:660000},
+  {rank:48, id:'abq',  name:'Albuquerque–Santa Fe',         tvHomes:640000},
+  {rank:49, id:'lou',  name:'Louisville KY',                tvHomes:620000},
+  {rank:50, id:'msy',  name:'New Orleans',                  tvHomes:600000},
+  {rank:51, id:'mem',  name:'Memphis TN',                   tvHomes:580000},
+  {rank:52, id:'pvd',  name:'Providence–New Bedford',       tvHomes:560000},
+  {rank:53, id:'rsw',  name:'Fort Myers–Naples',            tvHomes:540000},
+  {rank:54, id:'buf',  name:'Buffalo NY',                   tvHomes:520000},
+  {rank:55, id:'fre',  name:'Fresno–Visalia',               tvHomes:500000},
+  {rank:56, id:'ric',  name:'Richmond–Petersburg',          tvHomes:480000},
+  {rank:57, id:'mob',  name:'Mobile–Pensacola',             tvHomes:460000},
+  {rank:58, id:'lit',  name:'Little Rock–Pine Bluff',       tvHomes:440000},
+  {rank:59, id:'avp',  name:'Wilkes Barre–Scranton',        tvHomes:420000},
+  {rank:60, id:'tys',  name:'Knoxville TN',                 tvHomes:400000},
+  {rank:61, id:'tul',  name:'Tulsa OK',                     tvHomes:390000},
+  {rank:62, id:'alb',  name:'Albany–Schenectady',           tvHomes:380000},
+  {rank:63, id:'lex',  name:'Lexington KY',                 tvHomes:370000},
+  {rank:64, id:'day',  name:'Dayton OH',                    tvHomes:360000},
+  {rank:65, id:'tuc',  name:'Tucson',                       tvHomes:350000},
+  {rank:66, id:'geg',  name:'Spokane',                      tvHomes:340000},
+  {rank:67, id:'dsm',  name:'Des Moines–Ames',              tvHomes:330000},
+  {rank:68, id:'grb',  name:'Green Bay–Appleton',           tvHomes:320000},
+  {rank:69, id:'hnl',  name:'Honolulu',                     tvHomes:310000},
+  {rank:70, id:'roa',  name:'Roanoke–Lynchburg',            tvHomes:300000},
+  {rank:71, id:'ict',  name:'Wichita–Hutchinson',           tvHomes:290000},
+  {rank:72, id:'fnt',  name:'Flint–Saginaw–Bay City',       tvHomes:280000},
+  {rank:73, id:'oma',  name:'Omaha NE',                     tvHomes:275000},
+  {rank:74, id:'sgf',  name:'Springfield MO',               tvHomes:265000},
+  {rank:75, id:'hsv',  name:'Huntsville–Decatur',           tvHomes:255000},
+  {rank:76, id:'cae',  name:'Columbia SC',                  tvHomes:245000},
+  {rank:77, id:'msn',  name:'Madison WI',                   tvHomes:240000},
+  {rank:78, id:'pwd',  name:'Portland–Auburn ME',           tvHomes:235000},
+  {rank:79, id:'roc',  name:'Rochester NY',                 tvHomes:230000},
+  {rank:80, id:'rgv',  name:'Harlingen–McAllen',            tvHomes:225000},
+  {rank:81, id:'tol',  name:'Toledo OH',                    tvHomes:220000},
+  {rank:82, id:'crw',  name:'Charleston–Huntington WV',     tvHomes:215000},
+  {rank:83, id:'act',  name:'Waco–Temple–Bryan',            tvHomes:210000},
+  {rank:84, id:'sav',  name:'Savannah GA',                  tvHomes:205000},
+  {rank:85, id:'chs',  name:'Charleston SC',                tvHomes:200000},
+  {rank:86, id:'cha',  name:'Chattanooga TN',               tvHomes:195000},
+  {rank:87, id:'cos',  name:'Colorado Springs–Pueblo',      tvHomes:190000},
+  {rank:88, id:'syr',  name:'Syracuse NY',                  tvHomes:185000},
+  {rank:89, id:'elp',  name:'El Paso',                      tvHomes:180000},
+  {rank:90, id:'pah',  name:'Paducah–Cape Girardeau',       tvHomes:175000},
+  {rank:91, id:'shv',  name:'Shreveport–Texarkana',         tvHomes:170000},
+  {rank:92, id:'cmi',  name:'Champaign–Springfield IL',     tvHomes:165000},
+  {rank:93, id:'bvt',  name:'Burlington–Plattsburgh',       tvHomes:160000},
+  {rank:94, id:'cid',  name:'Cedar Rapids–Iowa City',       tvHomes:155000},
+  {rank:95, id:'btr',  name:'Baton Rouge',                  tvHomes:150000},
+  {rank:96, id:'fay',  name:'Fort Smith–Fayetteville',      tvHomes:145000},
+  {rank:97, id:'myr',  name:'Myrtle Beach–Florence',        tvHomes:140000},
+  {rank:98, id:'boi',  name:'Boise ID',                     tvHomes:135000},
+  {rank:99, id:'jan',  name:'Jackson MS',                   tvHomes:130000},
+  {rank:100,id:'sbn',  name:'South Bend–Elkhart',           tvHomes:125000},
+  {rank:101,id:'tri',  name:'Tri-Cities TN-VA',             tvHomes:120000},
+  {rank:102,id:'gnv2', name:'Greenville–New Bern NC',       tvHomes:115000},
+  {rank:103,id:'rno',  name:'Reno NV',                      tvHomes:112000},
+  {rank:104,id:'mli',  name:'Davenport–Quad Cities',        tvHomes:110000},
+  {rank:105,id:'tlh',  name:'Tallahassee–Thomasville',      tvHomes:108000},
+  {rank:106,id:'tyl',  name:'Tyler–Longview TX',            tvHomes:106000},
+  {rank:107,id:'lnk',  name:'Lincoln–Hastings NE',          tvHomes:104000},
+  {rank:108,id:'ags',  name:'Augusta–Aiken GA',             tvHomes:102000},
+  {rank:109,id:'evv',  name:'Evansville IN',                tvHomes:100000},
+  {rank:110,id:'fwa',  name:'Fort Wayne IN',                tvHomes:98000},
+  {rank:111,id:'fsd',  name:'Sioux Falls SD',               tvHomes:96000},
+  {rank:112,id:'aoo',  name:'Johnstown–Altoona PA',         tvHomes:94000},
+  {rank:113,id:'far',  name:'Fargo–Valley City',            tvHomes:92000},
+  {rank:114,id:'yak',  name:'Yakima–Kennewick WA',          tvHomes:90000},
+  {rank:115,id:'spr',  name:'Springfield–Holyoke MA',       tvHomes:88000},
+  {rank:116,id:'tvc',  name:'Traverse City–Cadillac',       tvHomes:86000},
+  {rank:117,id:'lan',  name:'Lansing MI',                   tvHomes:84000},
+  {rank:118,id:'yng',  name:'Youngstown OH',                tvHomes:82000},
+  {rank:119,id:'mac',  name:'Macon GA',                     tvHomes:80000},
+  {rank:120,id:'eug',  name:'Eugene OR',                    tvHomes:78000},
+  {rank:121,id:'mgm',  name:'Montgomery–Selma AL',          tvHomes:76000},
+  {rank:122,id:'pia',  name:'Peoria–Bloomington IL',        tvHomes:74000},
+  {rank:123,id:'smx',  name:'Santa Barbara–San Luis Obispo',tvHomes:72000},
+  {rank:124,id:'lft',  name:'Lafayette LA',                 tvHomes:70000},
+  {rank:125,id:'bfl',  name:'Bakersfield CA',               tvHomes:68000},
+  {rank:126,id:'ilm',  name:'Wilmington NC',                tvHomes:66000},
+  {rank:127,id:'csg',  name:'Columbus GA',                  tvHomes:64000},
+  {rank:128,id:'mry',  name:'Monterey–Salinas',             tvHomes:62000},
+  {rank:129,id:'eau',  name:'La Crosse–Eau Claire WI',      tvHomes:60000},
+  {rank:130,id:'crp',  name:'Corpus Christi TX',            tvHomes:58000},
+  {rank:131,id:'sbr',  name:'Salisbury MD',                 tvHomes:56000},
+  {rank:132,id:'ama',  name:'Amarillo TX',                  tvHomes:54000},
+  {rank:133,id:'wau',  name:'Wausau–Rhinelander WI',        tvHomes:52000},
+  {rank:134,id:'tupm', name:'Columbus–Tupelo MS',           tvHomes:50000},
+  {rank:135,id:'cou',  name:'Columbia–Jefferson City MO',   tvHomes:48000},
+  {rank:136,id:'rdd',  name:'Chico–Redding CA',             tvHomes:46000},
+  {rank:137,id:'rkf',  name:'Rockford IL',                  tvHomes:44000},
+  {rank:138,id:'dlh',  name:'Duluth–Superior MN',           tvHomes:42000},
+  {rank:139,id:'mfr',  name:'Medford–Klamath Falls OR',     tvHomes:40000},
+  {rank:140,id:'lub',  name:'Lubbock TX',                   tvHomes:38000},
+  {rank:141,id:'top',  name:'Topeka KS',                    tvHomes:36000},
+  {rank:142,id:'mon',  name:'Monroe–El Dorado LA',          tvHomes:34000},
+  {rank:143,id:'bpt',  name:'Beaumont–Port Arthur TX',      tvHomes:32000},
+  {rank:144,id:'maf',  name:'Odessa–Midland TX',            tvHomes:31000},
+  {rank:145,id:'psp',  name:'Palm Springs CA',              tvHomes:30000},
+  {rank:146,id:'anc',  name:'Anchorage AK',                 tvHomes:29000},
+  {rank:147,id:'bis',  name:'Minot–Bismarck ND',            tvHomes:28000},
+  {rank:148,id:'pfn',  name:'Panama City FL',               tvHomes:27000},
+  {rank:149,id:'sux',  name:'Sioux City IA',                tvHomes:26000},
+  {rank:150,id:'sps',  name:'Wichita Falls–Lawton',         tvHomes:25000},
+  {rank:151,id:'jln',  name:'Joplin–Pittsburg MO',          tvHomes:24000},
+  {rank:152,id:'aby',  name:'Albany GA',                    tvHomes:23000},
+  {rank:153,id:'rmc',  name:'Rochester–Mason City IA',      tvHomes:22000},
+  {rank:154,id:'eri',  name:'Erie PA',                      tvHomes:21000},
+  {rank:155,id:'ida',  name:'Idaho Falls–Pocatello',        tvHomes:20000},
+  {rank:156,id:'bgr',  name:'Bangor ME',                    tvHomes:19500},
+  {rank:157,id:'gnv',  name:'Gainesville FL',               tvHomes:19000},
+  {rank:158,id:'gpt',  name:'Biloxi–Gulfport MS',           tvHomes:18500},
+  {rank:159,id:'ter',  name:'Terre Haute IN',               tvHomes:18000},
+  {rank:160,id:'ada',  name:'Sherman–Ada TX',               tvHomes:17500},
+  {rank:161,id:'mso',  name:'Missoula MT',                  tvHomes:17000},
+  {rank:162,id:'bgm',  name:'Binghamton NY',                tvHomes:16500},
+  {rank:163,id:'whl',  name:'Wheeling–Steubenville',        tvHomes:16000},
+  {rank:164,id:'yum',  name:'Yuma–El Centro',               tvHomes:15500},
+  {rank:165,id:'bil',  name:'Billings MT',                  tvHomes:15000},
+  {rank:166,id:'abi',  name:'Abilene–Sweetwater TX',        tvHomes:14500},
+  {rank:167,id:'blf',  name:'Bluefield–Beckley WV',         tvHomes:14000},
+  {rank:168,id:'hat',  name:'Hattiesburg–Laurel MS',        tvHomes:13500},
+  {rank:169,id:'rap',  name:'Rapid City SD',                tvHomes:13000},
+  {rank:170,id:'dhn',  name:'Dothan AL',                    tvHomes:12500},
+  {rank:171,id:'uti',  name:'Utica NY',                     tvHomes:12000},
+  {rank:172,id:'clk',  name:'Clarksburg–Weston WV',         tvHomes:11500},
+  {rank:173,id:'shd',  name:'Harrisonburg VA',              tvHomes:11000},
+  {rank:174,id:'mkl',  name:'Jackson TN',                   tvHomes:10500},
+  {rank:175,id:'qui',  name:'Quincy–Hannibal–Keokuk',       tvHomes:10000},
+  {rank:176,id:'cho',  name:'Charlottesville VA',           tvHomes:9500},
+  {rank:177,id:'lch',  name:'Lake Charles LA',              tvHomes:9000},
+  {rank:178,id:'elm',  name:'Elmira–Corning NY',            tvHomes:8500},
+  {rank:179,id:'wtn',  name:'Watertown NY',                 tvHomes:8000},
+  {rank:180,id:'bwg',  name:'Bowling Green KY',             tvHomes:7500},
+  {rank:181,id:'mqt',  name:'Marquette MI',                 tvHomes:7000},
+  {rank:182,id:'jbr',  name:'Jonesboro AR',                 tvHomes:6800},
+  {rank:183,id:'aex',  name:'Alexandria LA',                tvHomes:6600},
+  {rank:184,id:'lrd',  name:'Laredo TX',                    tvHomes:6400},
+  {rank:185,id:'btm',  name:'Butte–Bozeman MT',             tvHomes:6200},
+  {rank:186,id:'rdm',  name:'Bend OR',                      tvHomes:6000},
+  {rank:187,id:'gjt',  name:'Grand Junction–Montrose CO',   tvHomes:5800},
+  {rank:188,id:'twf',  name:'Twin Falls ID',                tvHomes:5600},
+  {rank:189,id:'laf',  name:'Lafayette IN',                 tvHomes:5400},
+  {rank:190,id:'lim',  name:'Lima OH',                      tvHomes:5200},
+  {rank:191,id:'gtf',  name:'Great Falls MT',               tvHomes:5000},
+  {rank:192,id:'mei',  name:'Meridian MS',                  tvHomes:4800},
+  {rank:193,id:'cys',  name:'Cheyenne–Scottsbluff',         tvHomes:4600},
+  {rank:194,id:'pkb',  name:'Parkersburg WV',               tvHomes:4400},
+  {rank:195,id:'gwb',  name:'Greenwood–Greenville MS',      tvHomes:4200},
+  {rank:196,id:'eka',  name:'Eureka CA',                    tvHomes:4000},
+  {rank:197,id:'sji',  name:'San Angelo TX',                tvHomes:3800},
+  {rank:198,id:'cpr',  name:'Casper–Riverton WY',           tvHomes:3600},
+  {rank:199,id:'mkt',  name:'Mankato MN',                   tvHomes:3400},
+  {rank:200,id:'otm',  name:'Ottumwa–Kirksville',           tvHomes:3200},
+  {rank:201,id:'stj',  name:'St. Joseph MO',                tvHomes:45420},
+  {rank:202,id:'fai',  name:'Fairbanks AK',                 tvHomes:37930},
+  {rank:203,id:'zzv',  name:'Zanesville OH',                tvHomes:33940},
+  {rank:204,id:'vct',  name:'Victoria TX',                  tvHomes:33500},
+  {rank:205,id:'hln',  name:'Helena MT',                    tvHomes:32420},
+  {rank:206,id:'pqi',  name:'Presque Isle ME',              tvHomes:28180},
+  {rank:207,id:'jun',  name:'Juneau AK',                    tvHomes:26920},
+  {rank:208,id:'apn',  name:'Alpena MI',                    tvHomes:17230},
+  {rank:209,id:'lbf',  name:'North Platte NE',              tvHomes:14760},
+  {rank:210,id:'ggw',  name:'Glendive MT',                  tvHomes:3920},
+];
+
+// ── SEASON PRESETS ──────────────────────────────────────────────
+const SEASON_PRESETS = {
+  orlando:  [1.10, 1.25, 1.42, 1.18, 1.05, 0.95, 0.92, 0.78, 0.72, 0.88, 1.02, 1.07],
+  ski:      [1.40, 1.20, 1.00, 0.60, 0.40, 0.30, 0.30, 0.40, 0.70, 0.90, 1.10, 1.50],
+  summer:   [0.70, 0.75, 0.90, 1.10, 1.30, 1.50, 1.50, 1.40, 1.10, 0.90, 0.75, 0.70],
+  urban:    [0.90, 0.95, 1.10, 1.20, 1.15, 1.00, 0.95, 0.90, 1.10, 1.20, 1.00, 0.95],
+  business: [0.90, 1.10, 1.15, 1.10, 1.10, 0.80, 0.70, 0.75, 1.10, 1.15, 1.10, 0.80],
+  alwayson: [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+};
+
+// ── CLIENT CONFIG STATE ─────────────────────────────────────────
+// C holds the client configuration set in Setup.
+// S holds the optimizer runtime state, derived from C.
+let C = {
+  name: '',
+  vertical: 'destination',
+  budget: 10,
+  modelType: 'roas',
+  roasTarget: 8,
+  transactionValue: 100,
+  transactionLabel: 'Purchase',
+  impactAnchor: 434,
+  impactSource: '',
+  activeChannelIds: ['search','social','dv360','digvid','ctvdom','tv','ooh','print'],
+  season: [...SEASON_PRESETS.orlando],
+  markets: [], // [{id, name, score, tvHomes}]
+  intlPct: 0,
+  inputMode: 'weight',
+  configured: false,
+};
+
+// Runtime state — rebuilt from C on launch
+let S = {
+  budget: 10, objective: 'roi', shoulder: 30, awarenessFloor: 20,
+  alloc: {}, mins: {}, maxs: {}, cpms: {}, rois: {}, roiConfs: {}, cpmConfs: {},
+  baseAlloc: {},
+  optimized: false,
+};
+
+// Active channels array — derived from C.activeChannelIds
+let CHANNELS = [];
+
+// Active markets array — derived from C.markets
+let MKT = { domAlloc: {}, applied: false };
+
+// ── SETUP HELPERS ───────────────────────────────────────────────
+
+function onSetupChange() {
+  C.name             = (document.getElementById('cfg-client-name')?.value || '').trim();
+  C.budget           = parseFloat(document.getElementById('cfg-budget')?.value) || 10;
+  C.modelType        = document.getElementById('cfg-model-type')?.value || 'roas';
+  C.roasTarget       = parseFloat(document.getElementById('cfg-roas-target')?.value) || 8;
+  C.transactionValue = parseFloat(document.getElementById('cfg-transaction-value')?.value) || 100;
+  C.transactionLabel = (document.getElementById('cfg-transaction-label')?.value || '').trim() || 'Purchase';
+  C.impactAnchor     = parseFloat(document.getElementById('cfg-impact-anchor')?.value) || 434;
+  C.impactSource     = (document.getElementById('cfg-impact-source')?.value || '').trim();
+  C.intlPct          = parseFloat(document.getElementById('cfg-intl-pct')?.value) || 0;
+  updateMarketScoreTotal();
+}
+
+function onVerticalChange() {
+  onSetupChange();
+  const v = document.getElementById('cfg-vertical').value;
+  // Suggest sensible defaults per vertical
+  const defaults = {
+    destination: ['search','ota','social','dv360','digvid','ctvdom','tv','audio','ooh','print'],
+    attraction:  ['search','ota','social','dv360','digvid','ctvdom','ooh','print'],
+    hotel:       ['search','metasearch','ota','social','dv360','digvid','ctvdom','email'],
+    cruise:      ['search','social','dv360','digvid','ctvdom','tv','print'],
+    airline:     ['search','metasearch','ota','social','dv360','digvid'],
+    other:       ['search','social','dv360','digvid','ctvdom'],
+  };
+  const suggested = defaults[v] || defaults.other;
+  C.activeChannelIds = suggested;
+  renderChannelToggles();
+}
+
+function onModelTypeChange() {
+  onSetupChange();
+  const t = document.getElementById('cfg-model-type').value;
+  document.getElementById('cfg-roas-fields').style.display  = t === 'roas'   ? '' : 'none';
+  document.getElementById('cfg-impact-fields').style.display = t === 'impact' ? '' : 'none';
+}
+
+function renderChannelToggles() {
+  const grid = document.getElementById('ch-toggle-grid');
+  grid.innerHTML = MASTER_CHANNELS.map(ch => {
+    const on = C.activeChannelIds.includes(ch.id);
+    return "<div class=\"ch-toggle" + (on ? " active" : "") + "\" onclick=\"toggleChannel('" + ch.id + "')\">" +
+      "<div class=\"ch-toggle-dot\" style=\"background:" + ch.color + ";\"></div>" +
+      "<div><div class=\"ch-toggle-name\">" + ch.name + "</div>" +
+      "<div class=\"ch-toggle-type\">" + ch.type + "</div></div>" +
+      "</div>";
+  }).join('');
+}
+
+function toggleChannel(id) {
+  const idx = C.activeChannelIds.indexOf(id);
+  if (idx >= 0) C.activeChannelIds.splice(idx, 1);
+  else C.activeChannelIds.push(id);
+  renderChannelToggles();
+}
+
+// ── SEASON EDITOR ───────────────────────────────────────────────
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function renderSeasonEditor() {
+  const wrap = document.getElementById('season-editor-wrap');
+  let html = '<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:6px;">';
+  C.season.forEach((val, i) => {
+    html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">' +
+      '<div style="font-size:10px;color:var(--orange);font-family:\'JetBrains Mono\';font-weight:500;">' + val.toFixed(2) + '</div>' +
+      '<input type="range" min="0.1" max="2.5" step="0.05" value="' + val + '" ' +
+      'style="writing-mode:vertical-lr;direction:rtl;width:28px;height:80px;cursor:pointer;" ' +
+      'oninput="onSeasonSlider(' + i + ',this.value)">' +
+      '<div style="font-size:10px;color:var(--ink-4);font-family:\'JetBrains Mono\';">' + MONTH_NAMES[i] + '</div>' +
+      '</div>';
+  });
+  html += '</div>';
+  html += '<div style="margin-top:12px;height:60px;display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:end;" id="season-preview-bars">';
+  html += '</div>';
+  wrap.innerHTML = html;
+  updateSeasonPreviewBars();
+}
+
+function onSeasonSlider(i, val) {
+  C.season[i] = parseFloat(val);
+  // Update display value
+  const inputs = document.querySelectorAll('#season-editor-wrap input[type=range]');
+  const displays = document.querySelectorAll('#season-editor-wrap div[style*="color:var(--orange)"]');
+  if (displays[i]) displays[i].textContent = parseFloat(val).toFixed(2);
+  updateSeasonPreviewBars();
+}
+
+function updateSeasonPreviewBars() {
+  const container = document.getElementById('season-preview-bars');
+  if (!container) return;
+  const maxVal = Math.max(...C.season);
+  container.innerHTML = C.season.map((v, i) => {
+    const h = Math.round((v / maxVal) * 56);
+    const isPeak = v === maxVal;
+    return '<div style="height:' + h + 'px;background:' + (isPeak ? 'var(--orange)' : 'var(--rule)') + ';border-radius:3px 3px 0 0;min-height:3px;"></div>';
+  }).join('');
+}
+
+function applySeasonPreset(key) {
+  if (!key || !SEASON_PRESETS[key]) return;
+  C.season = [...SEASON_PRESETS[key]];
+  renderSeasonEditor();
+}
+
+// ── DMA MULTI-SELECT ────────────────────────────────────────────
+const DMA_TIERS = [
+  { label: '── Major Markets (#1–10 · 2M+ HH)',    min: 1,   max: 10  },
+  { label: '── Large Markets (#11–30 · 1–2M HH)',  min: 11,  max: 30  },
+  { label: '── Medium Markets (#31–75)',            min: 31,  max: 75  },
+  { label: '── Small Markets (#76–150)',            min: 76,  max: 150 },
+  { label: '── Regional Markets (#151–210)',        min: 151, max: 210 },
+];
+
+function buildDMASelect() {
+  const sel = document.getElementById('dma-multiselect');
+  if (!sel) return;
+  sel.innerHTML = '';
+  DMA_TIERS.forEach(tier => {
+    const grp = document.createElement('optgroup');
+    grp.label = tier.label;
+    ALL_DMAS.filter(d => d.rank >= tier.min && d.rank <= tier.max).forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = '#' + d.rank + ' ' + d.name + ' (' + (d.tvHomes/1000).toFixed(0) + 'k HH)';
+      opt.dataset.rank = d.rank;
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  });
+}
+
+function filterDMAList(q) {
+  const sel = document.getElementById('dma-multiselect');
+  if (!sel) return;
+  const lower = q.trim().toLowerCase();
+  Array.from(sel.options).forEach(opt => {
+    const match = !lower || opt.textContent.toLowerCase().includes(lower);
+    opt.style.display = match ? '' : 'none';
+  });
+  // Show/hide optgroups based on whether they have any visible children
+  Array.from(sel.querySelectorAll('optgroup')).forEach(grp => {
+    const hasVisible = Array.from(grp.options).some(o => o.style.display !== 'none');
+    grp.style.display = hasVisible ? '' : 'none';
+  });
+}
+
+function quickSelectDMAs(mode) {
+  const sel = document.getElementById('dma-multiselect');
+  if (!sel) return;
+  if (mode === 'clear') {
+    Array.from(sel.options).forEach(o => { o.selected = false; });
+    C.markets = [];
+    renderSelectedMarkets();
+    syncMultiselectFromC();
+    return;
+  }
+  const topN = mode === 'top10' ? 10 : mode === 'top25' ? 25 : 50;
+  Array.from(sel.options).forEach(o => {
+    const rank = parseInt(o.dataset.rank);
+    if (rank <= topN) o.selected = true;
+  });
+  onDMAMultiSelect();
+}
+
+function onDMAMultiSelect() {
+  const sel = document.getElementById('dma-multiselect');
+  if (!sel) return;
+  const selectedIds = new Set(Array.from(sel.selectedOptions).map(o => o.value));
+
+  // Add newly selected markets
+  selectedIds.forEach(id => {
+    if (!C.markets.find(m => m.id === id)) {
+      const dma = ALL_DMAS.find(d => d.id === id);
+      if (!dma) return;
+      const defaultScore = Math.max(1, Math.round(100 * (dma.tvHomes / ALL_DMAS[0].tvHomes)));
+      C.markets.push({ id: dma.id, name: dma.name, score: defaultScore, tvHomes: dma.tvHomes });
+    }
+  });
+
+  // Remove deselected markets
+  C.markets = C.markets.filter(m => selectedIds.has(m.id));
+
+  renderSelectedMarkets();
+}
+
+function syncMultiselectFromC() {
+  // Keep the multiselect in sync when markets are removed via the score editor
+  const sel = document.getElementById('dma-multiselect');
+  if (!sel) return;
+  const selectedIds = new Set(C.markets.map(m => m.id));
+  Array.from(sel.options).forEach(o => { o.selected = selectedIds.has(o.value); });
+}
+
+function removeMarket(id) {
+  C.markets = C.markets.filter(m => m.id !== id);
+  syncMultiselectFromC();
+  renderSelectedMarkets();
+}
+
+function onMarketScore(id, val) {
+  const m = C.markets.find(m => m.id === id);
+  if (m) m.score = Math.max(1, Math.min(100, parseInt(val) || 1));
+  updateMarketScoreTotal();
+}
+
+function renderSelectedMarkets() {
+  const list = document.getElementById('mkt-selected-list');
+  if (!C.markets.length) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--ink-4);font-style:italic;padding:12px 0;">No markets added yet. Search above to add markets.</div>';
+    updateMarketScoreTotal();
+    return;
+  }
+  list.innerHTML = C.markets.map(m =>
+    "<div class=\"mkt-selected-row\">" +
+    "<div class=\"mkt-selected-name\">" + m.name + "</div>" +
+    "<div>" +
+      "<div class=\"mkt-score-label\">Score</div>" +
+      "<input class=\"mkt-score-inp\" type=\"number\" value=\"" + m.score + "\" min=\"1\" max=\"100\" " +
+      "onchange=\"onMarketScore('" + m.id + "',this.value)\" oninput=\"onMarketScore('" + m.id + "',this.value)\">" +
+    "</div>" +
+    "<div style=\"font-size:10px;color:var(--ink-4);font-family:'JetBrains Mono';\">" + (m.tvHomes/1000).toFixed(0) + "k HH</div>" +
+    "<button class=\"mkt-remove\" onclick=\"removeMarket('" + m.id + "')\">×</button>" +
+    "</div>"
+  ).join('');
+  updateMarketScoreTotal();
+}
+
+function updateMarketScoreTotal() {
+  const total = C.markets.reduce((s, m) => s + m.score, 0);
+  const el = document.getElementById('mkt-score-total');
+  if (el) el.textContent = 'Score total: ' + total + ' · weights sum to 100% at launch';
+}
+
+// ── LAUNCH ──────────────────────────────────────────────────────
+function showLaunchError(msg) {
+  const el = document.getElementById('launch-error');
+  if (!el) return;
+  el.textContent = '⚠ ' + msg;
+  el.style.display = '';
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function launchTool() {
+  const errEl = document.getElementById('launch-error');
+  if (errEl) errEl.style.display = 'none';
+
+  // Validate
+  if (!document.getElementById('cfg-client-name').value.trim()) {
+    showLaunchError('Please enter a client name.'); return;
+  }
+  if (C.activeChannelIds.length < 2) {
+    showLaunchError('Please activate at least 2 channels.'); return;
+  }
+  if (C.markets.length === 0) {
+    showLaunchError('Please select at least one market from the DMA list.'); return;
+  }
+
+  onSetupChange();
+  C.configured = true;
+
+  // Build CHANNELS from active selection
+  CHANNELS = MASTER_CHANNELS.filter(ch => C.activeChannelIds.includes(ch.id));
+
+  // Initialize S from C
+  S.budget        = C.budget;
+  S.awarenessFloor = hasAwarenessChannels() ? 20 : 0;
+  S.optimized     = false;
+  S.objective     = 'roi';
+  S.shoulder      = 30;
+
+  // Base allocations — equal weight among active channels
+  const baseAlloc = 1 / CHANNELS.length;
+  CHANNELS.forEach(ch => {
+    S.alloc[ch.id]    = ch.base || baseAlloc;
+    S.mins[ch.id]     = ch.minDef;
+    S.maxs[ch.id]     = ch.maxDef;
+    S.cpms[ch.id]     = ch.cpmDef;
+    S.rois[ch.id]     = ch.roiWeight;
+    S.roiConfs[ch.id] = ch.roiConf;
+    S.cpmConfs[ch.id] = ch.cpmConf;
+  });
+  // Normalize base allocations
+  const allocSum = Object.values(S.alloc).reduce((t,v)=>t+v,0);
+  CHANNELS.forEach(ch => { S.alloc[ch.id] /= allocSum; });
+  // Freeze baseline snapshot — used as the "ratio = 1.0" reference in calcChannelReturns.
+  // Never updated after launch, so optimizer movements away from this create dim-returns pressure.
+  S.baseAlloc = {};
+  CHANNELS.forEach(ch => { S.baseAlloc[ch.id] = S.alloc[ch.id]; });
+  // Freeze normalization denominator — prevents optimizer suppressing its own gains
+  S.baseAllocWeightedAvg = CHANNELS.reduce((s, ch) => s + (S.baseAlloc[ch.id] || 0) * ch.roiWeight, 0);
+
+  // Initialize market state
+  initMarketBaseline();
+
+  // Update header
+  document.getElementById('hdr-client-name').textContent = C.name + ' · Media Optimizer';
+  document.getElementById('hdr-budget-pill').textContent = '$' + C.budget.toFixed(1) + 'M';
+  document.getElementById('hdr-vertical-pill').textContent = C.vertical.charAt(0).toUpperCase() + C.vertical.slice(1);
+
+  // Unlock tabs
+  ['nav-optimizer','nav-markets','nav-mediaplan'].forEach(id => {
+    document.getElementById(id).classList.remove('locked');
+  });
+
+  // Update budget slider range
+  const budgetSlider = document.getElementById('s-budget');
+  const maxBudget = Math.max(200, C.budget * 3);
+  budgetSlider.max   = maxBudget;
+  budgetSlider.value = C.budget;
+  document.getElementById('v-budget').textContent = '$' + C.budget.toFixed(1) + 'M';
+
+  // Show/hide awareness floor based on whether upper-funnel channels are active
+  document.getElementById('awareness-floor-group').style.display = hasAwarenessChannels() ? '' : 'none';
+
+  // Render optimizer
+  renderChannels();
+  renderAssumptions();
+  renderSensitivity();
+  renderSeason();
+  renderROITable();
+  updateHero();
+  renderConfBarNote();
+  renderDisclaimerBody();
+  renderEconPanel();
+  renderROITableSubtitle();
+
+  switchView('optimizer');
+}
+
+function hasAwarenessChannels() {
+  return CHANNELS.some(ch => ['tv','ctvdom','ooh','digvid'].includes(ch.id));
+}
+
+// ── VIEW SWITCHING ───────────────────────────────────────────────
+function switchView(view) {
+  if (view !== 'setup' && !C.configured) return;
+  ['setup','optimizer','markets','mediaplan'].forEach(v => {
+    document.getElementById('view-' + v).style.display = v === view ? '' : 'none';
+  });
+  ['nav-setup','nav-optimizer','nav-markets','nav-mediaplan'].forEach(id => {
+    document.getElementById(id).classList.toggle('active', id === 'nav-' + view);
+  });
+  if (view === 'markets') renderMarketView();
+}
+
+// ── ANCHOR VALUE (model-aware) ───────────────────────────────────
+function getAnchor() {
+  // For ROAS model: anchor = target ROAS (e.g. 8)
+  // For impact model: anchor = impact multiplier (e.g. 434)
+  return C.modelType === 'roas' ? C.roasTarget : C.impactAnchor;
+}
+
+function getAnchorLabel() {
+  return C.modelType === 'roas'
+    ? 'ROAS ' + C.roasTarget.toFixed(1) + 'x target'
+    : C.impactAnchor + ':1 impact benchmark';
+}
+
+// ── CALC CHANNEL RETURNS ─────────────────────────────────────────
+function calcChannelReturns() {
+  if (!CHANNELS.length) return [];
+  const anchor = getAnchor();
+  // Weight semantics: 1.0 = meets target exactly, 3.5 = performs at 3.5× target.
+  // Blended = anchor × Σ(alloc[ch] × weight[ch]).
+  return CHANNELS.map(ch => {
+    const weight         = S.rois[ch.id] || ch.roiWeight;
+    const baselineReturn = anchor * weight;
+    const currentSpend   = (S.alloc[ch.id] || 0) * S.budget * 1e6;
+    // defaultSpend scales with current budget so ratio=1.0 at baseline allocation %
+    const defaultSpend   = (S.baseAlloc[ch.id] || S.alloc[ch.id] || (1/CHANNELS.length)) * S.budget * 1e6;
+
+    if (defaultSpend === 0 || currentSpend === 0) {
+      return { ch, baselineReturn, currentSpend, defaultSpend, dimFactor:0, effectiveReturn:0, channelImpact:0 };
+    }
+
+    const ratio = currentSpend / defaultSpend;
+    let dimFactor;
+    if (ratio >= 1) {
+      dimFactor = Math.sqrt(1 / ratio);
+    } else {
+      switch (ch.belowBase) {
+        case 'rising': dimFactor = Math.sqrt(1 / ratio); break;
+        case 'flat':   dimFactor = Math.pow(1 / ratio, 0.2); break;
+        case 'cliff':  dimFactor = ratio >= 0.5 ? 1.0 : ratio / 0.5; break;
+        default:       dimFactor = 1.0;
+      }
+    }
+    const effectiveReturn = baselineReturn * dimFactor;
+    const channelImpact   = currentSpend * effectiveReturn;
+    return { ch, baselineReturn, currentSpend, defaultSpend, dimFactor, effectiveReturn, channelImpact };
+  });
+}
+
+function calcDiminishingReturns() {
+  return calcChannelReturns().reduce((s,r) => s + r.channelImpact, 0);
+}
+
+// ── MARGINAL RETURN ─────────────────────────────────────────────
+function calcMarginal(id) {
+  const eps    = 0.001;
+  const saved  = S.alloc[id];
+  const before = calcChannelReturns().find(r => r.ch.id === id).channelImpact;
+  S.alloc[id]  = saved + eps;
+  const after  = calcChannelReturns().find(r => r.ch.id === id).channelImpact;
+  S.alloc[id]  = saved;
+  return (after - before) / (eps * S.budget * 1e6);
+}
+
+// ── HERO TILES ──────────────────────────────────────────────────
+function updateHero() {
+  const anchor       = getAnchor();
+  const totalImpact  = calcDiminishingReturns();
+  const budget       = S.budget * 1e6;
+  const fmtB = v => v >= 1e9 ? '$' + (v/1e9).toFixed(1) + 'B' : v >= 1e6 ? '$' + (v/1e6).toFixed(1) + 'M' : '$' + (v/1e3).toFixed(0) + 'k';
+
+  let wCPM = 0, tot = 0;
+  CHANNELS.forEach(ch => { const a = S.alloc[ch.id]||0; wCPM += a * (S.cpms[ch.id]||ch.cpmDef); tot += a; });
+  if (tot > 0) wCPM /= tot;
+  const totalImpressions = budget / (wCPM / 1000);
+  const impsLabel = totalImpressions >= 1e9 ? (totalImpressions/1e9).toFixed(1) + 'B' : (totalImpressions/1e6).toFixed(0) + 'M';
+
+  let tiles = [];
+
+  if (C.modelType === 'roas') {
+    const blendedROAS = budget > 0 ? totalImpact / budget : 0;
+    const projRevenue = totalImpact;
+    const purchases   = C.transactionValue > 0 ? Math.round(projRevenue / C.transactionValue) : 0;
+    const cpa         = purchases > 0 ? budget / purchases : 0;
+
+    tiles = [
+      { label: 'Working Media', value: '$' + S.budget.toFixed(1) + 'M', sub: 'annual budget' },
+      { label: 'Projected Revenue', value: fmtB(projRevenue), sub: C.roasTarget + 'x ROAS target · diminishing returns', accent: true },
+      { label: 'Est. ' + C.transactionLabel + 's', value: purchases.toLocaleString(), sub: '$' + C.transactionValue + ' avg transaction', pos: true },
+      { label: 'Blended ROAS', value: blendedROAS.toFixed(1) + 'x', sub: 'vs. ' + C.roasTarget + 'x target' },
+      { label: 'Blended CPM', value: '$' + wCPM.toFixed(2), sub: impsLabel + ' impressions' },
+    ];
+  } else {
+    const lodgingShare = 0.35;
+    const tdtRate      = 0.06;
+    const estHotelRev  = totalImpact * lodgingShare;
+    const estTDT       = estHotelRev * tdtRate;
+
+    tiles = [
+      { label: 'Working Media', value: '$' + S.budget.toFixed(1) + 'M', sub: 'annual budget' },
+      { label: 'Economic Impact', value: fmtB(totalImpact), sub: anchor + ':1 benchmark · diminishing returns', accent: true },
+      { label: 'Est. Hotel Revenue', value: fmtB(estHotelRev), sub: '35% lodging share of spend', pos: true },
+      { label: 'Est. TDT', value: fmtB(estTDT), sub: 'Hotel rev × 6% TDT rate' },
+      { label: 'Blended CPM', value: '$' + wCPM.toFixed(2), sub: impsLabel + ' impressions' },
+    ];
+  }
+
+  document.getElementById('hero-tiles').innerHTML = tiles.map(t =>
+    "<div class=\"hm\"><div class=\"hm-label\">" + t.label + "</div>" +
+    "<div class=\"hm-value" + (t.accent ? " accent" : t.pos ? " pos" : "") + "\">" + t.value + "</div>" +
+    "<div class=\"hm-sub\">" + t.sub + "</div></div>"
+  ).join('');
+
+  // Update econ panel
+  renderEconPanel();
+}
+
+function renderEconPanel() {
+  const anchor      = getAnchor();
+  const totalImpact = calcDiminishingReturns();
+  const budget      = S.budget * 1e6;
+  const fmtB = v => v >= 1e9 ? '$' + (v/1e9).toFixed(1) + 'B' : v >= 1e6 ? '$' + (v/1e6).toFixed(1) + 'M' : '$' + (v/1e3).toFixed(0) + 'k';
+
+  let title = 'Performance Summary';
+  let body  = '';
+
+  if (C.modelType === 'roas') {
+    const blendedROAS = budget > 0 ? totalImpact / budget : 0;
+    const purchases   = C.transactionValue > 0 ? Math.round(totalImpact / C.transactionValue) : 0;
+    const cpa         = purchases > 0 ? (budget / purchases) : 0;
+    body = "<div style=\"display:flex;justify-content:space-between;\"><span>Working media budget</span><span style=\"color:var(--ink);font-weight:500;\">$" + S.budget.toFixed(1) + "M</span></div>" +
+      "<div style=\"display:flex;justify-content:space-between;border-top:1px solid rgba(232,88,26,.15);padding-top:6px;margin-top:4px;\"><span>Projected revenue</span><span style=\"color:var(--green);font-weight:500;\">" + fmtB(totalImpact) + "</span></div>" +
+      "<div style=\"display:flex;justify-content:space-between;\"><span>Blended ROAS</span><span style=\"color:var(--orange);font-weight:500;\">" + blendedROAS.toFixed(1) + "x</span></div>" +
+      "<div style=\"display:flex;justify-content:space-between;\"><span>Est. " + C.transactionLabel + "s sold</span><span style=\"color:var(--blue-soft);font-weight:500;\">" + purchases.toLocaleString() + "</span></div>" +
+      "<div style=\"display:flex;justify-content:space-between;\"><span>Cost per " + C.transactionLabel.toLowerCase() + "</span><span style=\"color:var(--blue-soft);font-weight:500;\">$" + cpa.toFixed(2) + "</span></div>";
+  } else {
+    const estHotelRev = totalImpact * 0.35;
+    const estTDT      = estHotelRev * 0.06;
+    body = "<div style=\"display:flex;justify-content:space-between;\"><span>Working media budget</span><span style=\"color:var(--ink);font-weight:500;\">$" + S.budget.toFixed(1) + "M</span></div>" +
+      "<div style=\"display:flex;justify-content:space-between;border-top:1px solid rgba(232,88,26,.15);padding-top:6px;margin-top:4px;\"><span>Projected economic impact</span><span style=\"color:var(--green);font-weight:500;\">" + fmtB(totalImpact) + "</span></div>" +
+      "<div style=\"display:flex;justify-content:space-between;\"><span>Est. hotel revenue</span><span style=\"color:var(--blue-soft);font-weight:500;\">" + fmtB(estHotelRev) + "</span></div>" +
+      "<div style=\"display:flex;justify-content:space-between;\"><span>Est. TDT generated</span><span style=\"color:var(--blue);font-weight:500;\">" + fmtB(estTDT) + "</span></div>";
+  }
+
+  const titleEl = document.getElementById('econ-panel-title');
+  const bodyEl  = document.getElementById('econ-panel-body');
+  if (titleEl) titleEl.textContent = title;
+  if (bodyEl)  bodyEl.innerHTML   = body;
+}
+
+function renderConfBarNote() {
+  const el = document.getElementById('conf-bar-anchor-note');
+  if (el) el.textContent = getAnchorLabel();
+}
+
+function renderDisclaimerBody() {
+  const el = document.getElementById('disclaimer-body');
+  if (!el) return;
+  const anchor = getAnchorLabel();
+  el.innerHTML = "<strong>What this tool is:</strong> A strategic planning framework using benchmarks as starting assumptions. Every number is labeled by confidence level. The tool becomes more accurate as actual post-buy CPMs, attribution data, and performance reports replace benchmark values in the Assumptions tab." +
+    "<strong style=\"display:block;margin-top:6px;\">What this tool is not:</strong> A finished media plan. Channel efficiency weights are relative rankings informed by industry data — not client-specific attribution. The " + anchor + " is used here as a planning anchor, not a guaranteed outcome.";
+}
+
+function renderROITableSubtitle() {
+  const el = document.getElementById('roi-table-subtitle');
+  if (el) el.textContent = 'Implied from ' + getAnchorLabel() + ' · updates with allocation';
+}
+
+// ── CHANNEL MATRIX ──────────────────────────────────────────────
+function confClass(c) { return c==='confirmed'?'cb-c': c==='benchmarked'?'cb-b':'cb-e'; }
+function confLabel(c) { return c==='confirmed'?'CONFIRMED': c==='benchmarked'?'BENCHMARK':'ESTIMATE'; }
+
+function renderChannels() {
+  let html = '';
+  const chRetMap = {};
+  calcChannelReturns().forEach(r => { chRetMap[r.ch.id] = r; });
+  const anchor = getAnchor();
+
+  CHANNELS.forEach((ch, i) => {
+    const pct     = Math.round(S.alloc[ch.id] * 100);
+    const dols    = (S.alloc[ch.id] * S.budget).toFixed(1);
+    const barW    = Math.min(100, pct * 3);
+    const chRet   = chRetMap[ch.id];
+    const effRet  = chRet ? Math.round(chRet.effectiveReturn) : 0;
+    const retColor = effRet > anchor ? 'var(--green)' : 'var(--ink-4)';
+    const margRet  = Math.round(calcMarginal(ch.id));
+    const margColor = margRet > effRet ? 'var(--green)' : margRet < effRet ? 'var(--red)' : 'var(--ink-4)';
+    const margLabel = S.optimized ? "<div style=\"font-size:9px;color:" + margColor + ";font-weight:400;margin-top:2px;\">→ $" + margRet.toLocaleString() + " next $</div>" : '';
+
+    html += "<div class=\"ch-row\">" +
+      "<div class=\"ch-num\">" + (i+1) + "</div>" +
+      "<div class=\"ch-info\">" +
+        "<div class=\"ch-name\">" + ch.name + "</div>" +
+        "<div class=\"ch-type\">" + ch.type + "</div>" +
+        "<div class=\"ch-track\"><div class=\"ch-fill\" style=\"width:" + barW + "%;background:" + ch.color + ";\"></div></div>" +
+      "</div>" +
+      "<div style=\"font-family:'JetBrains Mono';font-size:11px;font-weight:500;color:" + retColor + ";text-align:right;line-height:1.3;\">" +
+        "$" + effRet.toLocaleString() +
+        "<div style=\"font-size:9px;color:var(--ink-4);font-weight:400;\">per $</div>" +
+        margLabel +
+      "</div>" +
+      "<div style=\"display:flex;gap:8px;align-items:flex-end;\">" +
+        "<div><div style=\"font-size:9px;color:var(--ink-4);font-family:'JetBrains Mono';margin-bottom:3px;text-align:center;\">MIN %</div>" +
+        "<input class=\"min-inp\" type=\"number\" value=\"" + S.mins[ch.id] + "\" min=\"0\" max=\"30\" onchange=\"onMin('" + ch.id + "',this.value)\"></div>" +
+        "<div><div style=\"font-size:9px;color:var(--ink-4);font-family:'JetBrains Mono';margin-bottom:3px;text-align:center;\">MAX %</div>" +
+        "<input class=\"min-inp\" type=\"number\" value=\"" + S.maxs[ch.id] + "\" min=\"0\" max=\"100\" onchange=\"onMax('" + ch.id + "',this.value)\"></div>" +
+      "</div>" +
+      "<div class=\"ch-pct " + (S.optimized?"live":"") + "\">" + pct + "%</div>" +
+      "<div class=\"ch-dollars\">$" + dols + "M</div>" +
+      "<canvas id=\"spark-" + ch.id + "\" width=\"110\" height=\"44\" style=\"display:block;\" title=\"" + ch.name + " diminishing returns curve\"></canvas>" +
+      "</div>";
+
+    // Awareness indicator after TV row
+    if (ch.id === 'tv' && CHANNELS.find(c => c.id === 'ctvdom')) {
+      const combined    = ((S.alloc['tv']||0) + (S.alloc['ctvdom']||0)) * 100;
+      const floor       = S.awarenessFloor || 20;
+      const isBelow     = combined < floor;
+      const statusColor = isBelow ? 'var(--red)' : 'var(--green)';
+      const statusLabel = isBelow ? "⚠ " + combined.toFixed(0) + "% — below " + floor + "% floor" : "✓ " + combined.toFixed(0) + "% — above " + floor + "% floor";
+      html += "<div style=\"margin:0 24px 2px;padding:6px 12px;background:" + (isBelow?"var(--red-pale)":"var(--green-pale)") + ";border-radius:var(--r-xs);display:flex;align-items:center;justify-content:space-between;\">" +
+        "<span style=\"font-size:10px;font-weight:500;color:" + statusColor + ";\">Broadcast + CTV combined awareness</span>" +
+        "<span style=\"font-family:'JetBrains Mono';font-size:10px;font-weight:600;color:" + statusColor + ";\">" + statusLabel + "</span>" +
+        "</div>";
+    }
+  });
+  document.getElementById('channel-list').innerHTML = html;
+  updateAwarenessDisplay();
+  requestAnimationFrame(drawSparklines);
+}
+
+// ── ASSUMPTIONS EDITOR ───────────────────────────────────────────
+function renderAssumptions() {
+  const isROAS = C.inputMode === 'roas';
+  const roasTarget = C.roasTarget || 8;
+
+  let html = "<div style=\"padding:10px 24px 12px;background:var(--bg-warm);border-bottom:1px solid var(--rule-light);\">" +
+    "<div style=\"display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;\">" +
+    "<div style=\"font-size:11px;color:var(--ink-3);line-height:1.6;flex:1;\">" +
+    "<strong style=\"color:var(--ink-2);\">Channel efficiency</strong> — " +
+    (isROAS
+      ? "Enter observed ROAS from platform data. The model converts to a weight internally (<em>weight = observed ÷ " + roasTarget + "x target</em>). Blended ROAS = target × allocation-weighted average of weights."
+      : "Direct ROAS multipliers relative to the " + getAnchorLabel() + ". Weight 1.0 = meets target exactly. 3.5 = 3.5× target. 0.5 = 50% of target.") +
+    "</div>" +
+    "<div style=\"display:flex;align-items:center;gap:6px;flex-shrink:0;\">" +
+    "<span style=\"font-size:11px;color:var(--ink-3);\">Input as:</span>" +
+    "<div style=\"display:flex;background:var(--bg);border:1px solid var(--rule);border-radius:var(--r-xs);padding:2px;gap:2px;\">" +
+    "<button onclick=\"setInputMode('weight')\" style=\"padding:4px 10px;border:none;border-radius:4px;font-family:'Figtree';font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;" + (!isROAS ? "background:var(--surface);color:var(--orange);box-shadow:var(--shadow-sm);" : "background:transparent;color:var(--ink-4);") + "\">Weights</button>" +
+    "<button onclick=\"setInputMode('roas')\" style=\"padding:4px 10px;border:none;border-radius:4px;font-family:'Figtree';font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;" + (isROAS ? "background:var(--surface);color:var(--orange);box-shadow:var(--shadow-sm);" : "background:transparent;color:var(--ink-4);") + "\">Observed ROAS</button>" +
+    "</div></div></div></div>";
+
+  CHANNELS.forEach(ch => {
+    const roiConf  = S.roiConfs[ch.id];
+    const weight   = S.rois[ch.id] || ch.roiWeight;
+    const obsROAS  = weight * roasTarget;
+    const inputVal = isROAS ? obsROAS.toFixed(1) : weight.toFixed(2);
+    const inputMax = isROAS ? 999 : 20;
+    const inputStep = isROAS ? 0.5 : 0.01;
+    const derivedLabel = isROAS
+      ? "<span style=\"font-size:10px;color:var(--ink-4);font-family:'JetBrains Mono';\">→ weight " + weight.toFixed(2) + "</span>"
+      : "<span style=\"font-size:10px;color:var(--ink-4);font-family:'JetBrains Mono';\">→ " + obsROAS.toFixed(1) + "x ROAS</span>";
+
+    html += "<div class=\"assump-row\">" +
+      "<div><div class=\"assump-name\">" + ch.name + (isROAS ? " — observed ROAS" : " — efficiency weight") + "</div>" +
+      "<div class=\"assump-source\">" + ch.roiSrc + "</div></div>" +
+      "<div class=\"assump-val\" style=\"display:flex;flex-direction:column;align-items:flex-end;gap:3px;\">" +
+        "<input class=\"assump-inp " + roiConf + "\" type=\"number\" value=\"" + inputVal + "\" min=\"0.01\" max=\"" + inputMax + "\" step=\"" + inputStep + "\" onchange=\"updateROI('" + ch.id + "',this.value,true)\" style=\"width:72px;\">" +
+        derivedLabel +
+      "</div>" +
+      "<div style=\"display:flex;align-items:center;gap:8px;\">" +
+      "<span class=\"conf-badge " + confClass(roiConf) + "\">" + confLabel(roiConf) + "</span>" +
+      (roiConf !== "confirmed" ? "<span style=\"font-size:10px;color:var(--orange);cursor:pointer;\" onclick=\"markConfirmed('" + ch.id + "','roi')\">Mark confirmed ↗</span>" : "") +
+      "</div></div>";
+  });
+  document.getElementById('assumption-list').innerHTML = html;
+}
+
+function setInputMode(mode) {
+  C.inputMode = mode;
+  renderAssumptions();
+}
+
+function updateROI(id, val, fromAssump) {
+  const v = parseFloat(val);
+  if (isNaN(v) || v <= 0) return;
+  // Convert to weight if user entered observed ROAS
+  const weight = (C.inputMode === 'roas') ? v / (C.roasTarget || 8) : v;
+  if (weight < 0.01) return;
+  S.rois[id] = weight;
+  if (!fromAssump) S.roiConfs[id] = 'confirmed';
+  else S.roiConfs[id] = 'confirmed';
+  S.baseAllocWeightedAvg = CHANNELS.reduce((s, ch) => s + (S.baseAlloc[ch.id] || 0) * (S.rois[ch.id] || ch.roiWeight), 0);
+  renderChannels(); renderROITable(); updateHero();
+  renderAssumptions();
+}
+
+function markConfirmed(id, type) {
+  if (type === 'roi') S.roiConfs[id] = 'confirmed';
+  renderAssumptions();
+}
+
+// ── SENSITIVITY ──────────────────────────────────────────────────
+function renderSensitivity() {
+  const items = [
+    { name: 'Paid Search conversion rate', impact: 'High', src: 'Replace with GA4 actuals — currently benchmark estimate', conf: 'estimated' },
+    { name: 'CPM accuracy vs. contracted rates', impact: 'High', src: 'All CPMs are benchmarks — replace with confirmed buy data', conf: 'estimated' },
+    { name: 'Channel attribution model', impact: 'High', src: 'No clean cross-channel attribution — replace with post-buy data', conf: 'estimated' },
+    { name: 'Avg transaction value', impact: 'Medium', src: '$' + C.transactionValue + ' — confirm with client revenue data', conf: 'benchmarked' },
+    { name: 'Seasonality index accuracy', impact: 'Medium', src: 'Replace with actual historical booking/revenue data by month', conf: 'estimated' },
+    { name: 'ROAS target achievability', impact: 'High', src: C.roasTarget + 'x blended target — validate against historical actuals', conf: 'estimated' },
+  ];
+  let html = '';
+  items.forEach(it => {
+    html += "<div class=\"sens-row\">" +
+      "<div><div class=\"sens-name\">" + it.name + "</div>" +
+      "<div style=\"font-size:10px;color:var(--ink-4);margin-top:2px;\">" + it.src + "</div></div>" +
+      "<div style=\"text-align:center;\"><span class=\"conf-badge " + confClass(it.conf) + "\">" + confLabel(it.conf) + "</span></div>" +
+      "<div class=\"sens-impact\">" + it.impact + " impact</div>" +
+      "</div>";
+  });
+  document.getElementById('sensitivity-list').innerHTML = html;
+}
+
+// ── SEASONALITY BAR CHART ─────────────────────────────────────────
+function renderSeason() {
+  const boost  = S.shoulder / 100;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const data   = C.season.map((v, i) => ({
+    m: months[i],
+    idx: ['Aug','Sep','Oct'].includes(months[i]) ? v + boost * 0.35 : v
+  }));
+  const maxI = Math.max(...data.map(d => d.idx));
+  let bars = '', lbls = '';
+  data.forEach((m, i) => {
+    const h   = Math.round((m.idx/maxI)*85);
+    const isSh = ['Aug','Sep','Oct'].includes(m.m) && boost > 0.2;
+    const isPk = m.idx >= maxI * 0.95;
+    const bg  = isSh ? 'var(--orange)' : isPk ? 'var(--blue-soft)' : 'var(--rule)';
+    bars += "<div class=\"s-bar-wrap\"><div class=\"s-bar\" style=\"height:" + h + "px;background:" + bg + ";\"></div></div>";
+    lbls += "<div style=\"text-align:center;font-size:9px;color:var(--ink-4);font-family:'JetBrains Mono';\">" + m.m + "</div>";
+  });
+  document.getElementById('season-bars').innerHTML = bars;
+  document.getElementById('season-lbls').innerHTML = lbls;
+}
+
+// ── ROI TABLE ────────────────────────────────────────────────────
+function renderROITable() {
+  const returns     = calcChannelReturns();
+  const maxImpact   = Math.max(...returns.map(r => r.channelImpact), 1);
+  const totalImpact = returns.reduce((s,r) => s+r.channelImpact, 0);
+  const anchor      = getAnchor();
+  const fmtB = v => v >= 1e9 ? '$' + (v/1e9).toFixed(1) + 'B' : '$' + (v/1e6).toFixed(0) + 'M';
+  const sorted = [...returns].sort((a,b) => b.channelImpact - a.channelImpact);
+
+  let html = "<div class=\"cr-header\"><div>Channel</div><div style=\"text-align:right;\">Spend</div><div style=\"text-align:right;\">$/$ Return</div><div style=\"text-align:right;\">Impact</div><div style=\"padding-left:10px;\">Share of impact</div></div>";
+
+  sorted.forEach(({ ch, baselineReturn, currentSpend, dimFactor, effectiveReturn, channelImpact }) => {
+    const barW      = Math.round((channelImpact / maxImpact) * 100);
+    const sharePct  = totalImpact > 0 ? ((channelImpact / totalImpact) * 100).toFixed(0) : 0;
+    const dimDelta  = dimFactor - 1.0;
+    const dimNote   = Math.abs(dimDelta) < 0.02 ? 'at baseline' : dimDelta > 0 ? '+' + (dimDelta*100).toFixed(0) + '% vs baseline' : (dimDelta*100).toFixed(0) + '% vs baseline';
+    const dimColor  = Math.abs(dimDelta) < 0.02 ? 'var(--ink-4)' : dimDelta > 0 ? 'var(--green)' : 'var(--red)';
+
+    html += "<div class=\"cr-row\">" +
+      "<div class=\"cr-name\"><div class=\"mp-color-swatch\" style=\"background:" + ch.color + ";height:9px;width:9px;border-radius:2px;flex-shrink:0;\"></div>" + ch.name + "</div>" +
+      "<div class=\"cr-spend\">$" + (currentSpend/1e6).toFixed(1) + "M</div>" +
+      "<div class=\"cr-ret\" style=\"color:" + (effectiveReturn > anchor ? "var(--green)" : "var(--ink-3)") + ";\">" +
+        "$" + Math.round(effectiveReturn).toLocaleString() +
+        "<div class=\"cr-dim-note\" style=\"color:" + dimColor + ";\">" + dimNote + "</div>" +
+      "</div>" +
+      "<div class=\"cr-impact\" style=\"color:var(--orange);\">" + fmtB(channelImpact) + "</div>" +
+      "<div class=\"cr-bar-wrap\"><div class=\"cr-bar-track\"><div class=\"cr-bar-fill\" style=\"width:" + barW + "%;background:" + ch.color + ";opacity:0.7;\"></div></div>" +
+        "<div class=\"cr-dim-note\" style=\"color:var(--ink-4);margin-top:2px;\">" + sharePct + "% of total</div>" +
+      "</div></div>";
+  });
+
+  html += "<div style=\"padding:9px 16px;background:var(--orange-wash);border-top:2px solid var(--orange);display:grid;grid-template-columns:1fr 62px 72px 80px 1fr;gap:0;align-items:center;\">" +
+    "<div style=\"font-size:11px;font-weight:600;color:var(--ink-2);font-family:'JetBrains Mono';\">TOTAL</div>" +
+    "<div style=\"font-family:'JetBrains Mono';font-size:11px;font-weight:500;text-align:right;\">$" + S.budget.toFixed(1) + "M</div>" +
+    "<div style=\"font-family:'JetBrains Mono';font-size:11px;font-weight:500;text-align:right;color:var(--orange);\">$" + Math.round(totalImpact/(S.budget*1e6)).toLocaleString() + "</div>" +
+    "<div style=\"font-family:'JetBrains Mono';font-size:11px;font-weight:500;text-align:right;color:var(--orange);\">" + fmtB(totalImpact) + "</div>" +
+    "<div></div></div>";
+
+  html += "<div style=\"padding:8px 16px;font-size:10px;color:var(--ink-4);font-style:italic;line-height:1.55;\">" +
+    "$/$ return = channel efficiency weight × " + getAnchorLabel() + ". Weight 1.0 = meets target exactly; 3.5 = 3.5× target. " +
+    "Diminishing returns: ratio = current spend ÷ baseline spend — doubling spend in any channel yields ~1.41× return. \"vs baseline\" shows movement from launch allocation." +
+    "</div>";
+
+  document.getElementById('roi-table').innerHTML = html;
+}
+
+// ── OPTIMIZER ────────────────────────────────────────────────────
+function runOptimizer() {
+  const btn = document.getElementById('opt-btn');
+  btn.classList.add('running');
+  btn.innerHTML = '<span class="spin"></span>Optimizing…';
+  setTimeout(() => {
+    optimize();
+    S.optimized = true;
+    btn.classList.remove('running'); btn.classList.add('done');
+    btn.textContent = '✓ Optimized — run again';
+    renderChannels(); updateHero(); renderROITable();
+    document.getElementById('results-sec').style.display = 'block';
+    document.getElementById('narrative').style.display   = 'block';
+    genNarrative();
+  }, 1300);
+}
+
+function optimize() {
+  const prev      = {...S.alloc};
+  const MAX_ITER  = 800;
+  const CONVERGE  = 2.0;
+
+  const floors = {}, caps = {};
+  CHANNELS.forEach(ch => { floors[ch.id] = Math.max(0.005, (S.mins[ch.id]||0) / 100); });
+  CHANNELS.forEach(ch => { caps[ch.id]   = Math.min(1.0, Math.max(floors[ch.id], (S.maxs[ch.id]||35) / 100)); });
+
+  // Awareness floor for TV + CTV if both active
+  const hasTv  = CHANNELS.find(c => c.id === 'tv');
+  const hasCtv = CHANNELS.find(c => c.id === 'ctvdom');
+  if (hasTv && hasCtv && S.awarenessFloor > 0) {
+    const awarFloor   = S.awarenessFloor / 100;
+    const tvAlloc     = S.alloc['tv']     || 0.15;
+    const ctvAlloc    = S.alloc['ctvdom'] || 0.12;
+    const combinedNow = tvAlloc + ctvAlloc;
+    if (combinedNow > 0) {
+      floors['tv']     = Math.max(floors['tv'],     awarFloor * (tvAlloc / combinedNow));
+      floors['ctvdom'] = Math.max(floors['ctvdom'],  awarFloor * (ctvAlloc / combinedNow));
+    } else {
+      floors['tv']     = Math.max(floors['tv'],     awarFloor * 0.55);
+      floors['ctvdom'] = Math.max(floors['ctvdom'],  awarFloor * 0.45);
+    }
+  }
+
+  function clampAndNormalize() {
+    CHANNELS.forEach(ch => { S.alloc[ch.id] = Math.min(caps[ch.id], Math.max(floors[ch.id], S.alloc[ch.id])); });
+    const floorSum = Object.values(floors).reduce((t,v)=>t+v,0);
+    const capSum   = Object.values(caps).reduce((t,v)=>t+v,0);
+    if (floorSum >= 1) { CHANNELS.forEach(ch => { S.alloc[ch.id] = floors[ch.id] / floorSum; }); return; }
+    if (capSum <= 1.0001) { CHANNELS.forEach(ch => { S.alloc[ch.id] = caps[ch.id] / capSum; }); return; }
+    let s = Object.values(S.alloc).reduce((t,v)=>t+v,0);
+    if (s > 0) CHANNELS.forEach(ch => { S.alloc[ch.id] /= s; });
+    CHANNELS.forEach(ch => { S.alloc[ch.id] = Math.min(caps[ch.id], Math.max(floors[ch.id], S.alloc[ch.id])); });
+    s = Object.values(S.alloc).reduce((t,v)=>t+v,0);
+    if (s > 0) CHANNELS.forEach(ch => { S.alloc[ch.id] /= s; });
+  }
+
+  clampAndNormalize();
+
+  function marginal(id) {
+    const eps = 0.001, saved = S.alloc[id];
+    const before = calcChannelReturns().find(r => r.ch.id === id).channelImpact;
+    S.alloc[id] = saved + eps;
+    const after = calcChannelReturns().find(r => r.ch.id === id).channelImpact;
+    S.alloc[id] = saved;
+    return (after - before) / (eps * S.budget * 1e6);
+  }
+
+  function score(id) {
+    const ch = CHANNELS.find(c => c.id === id);
+    const mr = marginal(id);
+    if (S.objective === 'roi') return mr;
+    if (S.objective === 'cpm') {
+      const maxCPM = Math.max(...CHANNELS.map(c => S.cpms[c.id] || c.cpmDef));
+      return mr * (maxCPM / (S.cpms[id] || ch.cpmDef));
+    }
+    if (S.objective === 'reach') {
+      const maxCPM = Math.max(...CHANNELS.map(c => S.cpms[c.id] || c.cpmDef));
+      const funnelBonus = ch.funnel === 'upper' ? 1.6 : ch.funnel === 'mid' ? 1.2 : 0.8;
+      return mr * (maxCPM / (S.cpms[id] || ch.cpmDef)) * funnelBonus;
+    }
+    // 'perf': strong lower-funnel bias
+    const cb = ch.funnel === 'lower' ? 1.6 : ch.funnel === 'mid' ? 1.1 : 0.5;
+    return mr * cb;
+  }
+
+  function adjustedScore(id) {
+    let s = score(id);
+    if (S.shoulder > 30 && ['search','ota','social'].includes(id)) s *= 1 + S.shoulder / 200;
+    if (S.shoulder > 50 && ['tv','print'].includes(id))            s *= 1 - S.shoulder / 300;
+    return s;
+  }
+
+  for (let iter = 0; iter < MAX_ITER; iter++) {
+    const scores = {};
+    CHANNELS.forEach(ch => { scores[ch.id] = adjustedScore(ch.id); });
+    const mobileChs = CHANNELS.filter(ch =>
+      S.alloc[ch.id] > floors[ch.id] + 0.001 && S.alloc[ch.id] < caps[ch.id] - 0.001
+    );
+    if (!mobileChs.length) break;
+    const avg = mobileChs.map(ch => scores[ch.id]).reduce((t,v)=>t+v,0) / mobileChs.length;
+    const donors     = CHANNELS.filter(ch => scores[ch.id] < avg && S.alloc[ch.id] > floors[ch.id] + 0.001);
+    const recipients = CHANNELS.filter(ch => scores[ch.id] > avg && S.alloc[ch.id] < caps[ch.id] - 0.001);
+    if (!donors.length || !recipients.length) break;
+    const gap = Math.max(...recipients.map(ch=>scores[ch.id])) - Math.min(...donors.map(ch=>scores[ch.id]));
+    if (gap < CONVERGE) break;
+    const stepPool = Math.min(0.015, 0.0004 * gap);
+    const dW = donors.reduce((t,ch)=>t+(avg-scores[ch.id]),0);
+    const rW = recipients.reduce((t,ch)=>t+(scores[ch.id]-avg),0);
+    donors.forEach(ch => {
+      const take = Math.min(stepPool*(avg-scores[ch.id])/dW, S.alloc[ch.id]-floors[ch.id]);
+      S.alloc[ch.id] -= Math.max(0, take);
+    });
+    recipients.forEach(ch => {
+      const give = Math.min(stepPool*(scores[ch.id]-avg)/rW, caps[ch.id]-S.alloc[ch.id]);
+      S.alloc[ch.id] += Math.max(0, give);
+    });
+    clampAndNormalize();
+  }
+  clampAndNormalize();
+
+  // Render delta table
+  const deltas = CHANNELS.map(ch => ({
+    name: ch.name, color: ch.color, newPct: S.alloc[ch.id],
+    delta: (S.alloc[ch.id] - (prev[ch.id] || (ch.base||1/CHANNELS.length))) * S.budget
+  })).sort((a,b) => Math.abs(b.delta)-Math.abs(a.delta)).slice(0, 8);
+
+  let html = '';
+  deltas.forEach(d => {
+    const ds  = d.delta >= 0 ? '+' : '';
+    const cls = d.delta > 0.08 ? 'up' : d.delta < -0.08 ? 'dn' : 'neu';
+    html += "<div class=\"r-row\"><span class=\"r-label\"><span class=\"r-dot\" style=\"background:" + d.color + "\"></span>" + d.name + "</span><span class=\"r-vals\"><span class=\"r-pct\">" + Math.round(d.newPct*100) + "%</span><span class=\"r-delta " + cls + "\">" + ds + "$" + Math.abs(d.delta).toFixed(1) + "M</span></span></div>";
+  });
+  document.getElementById('results-list').innerHTML = html;
+}
+
+// ── NARRATIVE ────────────────────────────────────────────────────
+function genNarrative() {
+  const topCh   = [...CHANNELS].sort((a,b)=>(S.alloc[b.id]||0)-(S.alloc[a.id]||0))[0];
+  const topPct  = Math.round((S.alloc[topCh.id]||0)*100);
+  const objLabel = {roi:'maximize economic return per dollar',cpm:'minimize blended CPM',reach:'maximize reach-weighted impressions',perf:'maximize performance / lower-funnel efficiency'}[S.objective];
+  const confirmed = Object.values(S.roiConfs).filter(x=>x==='confirmed').length;
+
+  let t = "Based on the objective to <strong>" + objLabel + "</strong>, " + topCh.name + " receives <strong>" + topPct + "%</strong> of working media, reflecting its position as the highest-efficiency channel in the active mix. ";
+
+  if (S.shoulder > 30) {
+    t += "The shoulder season push shifts budget toward lower-funnel channels during off-peak months, addressing the gap between seasonal demand peaks and year-round booking intent. ";
+  }
+
+  if (C.modelType === 'roas') {
+    const blendedROAS = calcDiminishingReturns() / (S.budget * 1e6);
+    t += "At this allocation, the projected blended ROAS is <strong>" + blendedROAS.toFixed(1) + "x</strong> vs. the " + C.roasTarget + "x target. The diminishing returns model means adding more budget to already-heavy channels yields less than rebalancing toward underfunded ones. ";
+  }
+
+  if (confirmed > 0) {
+    t += "<strong>" + confirmed + " of " + CHANNELS.length + " efficiency weights</strong> have been confirmed with actual data — the model improves as more actuals replace benchmarks. ";
+  } else {
+    t += "<strong>All efficiency weights are currently benchmark-sourced.</strong> Replace with actual post-buy attribution data from your analytics platform to improve projection accuracy. ";
+  }
+
+  document.getElementById('narr-body').innerHTML = t;
+}
+
+// ── HANDLERS ────────────────────────────────────────────────────
+function onBudget(v) {
+  S.budget = parseFloat(v);
+  document.getElementById('v-budget').textContent = '$' + parseFloat(v).toFixed(1) + 'M';
+  renderChannels(); updateHero();
+}
+
+function setObj(o, btn) {
+  S.objective = o;
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+}
+
+function onShoulder(v) {
+  S.shoulder = parseInt(v);
+  document.getElementById('v-shoulder').textContent = v <= 20 ? 'Standard' : v <= 50 ? 'Elevated' : 'Maximum push';
+  renderSeason();
+}
+
+function onAwareness(v) {
+  S.awarenessFloor = parseInt(v);
+  document.getElementById('v-awareness').textContent = v + '%';
+  updateAwarenessDisplay();
+}
+
+function onMin(id, v) {
+  S.mins[id] = Math.max(0, Math.min(S.maxs[id]||100, parseInt(v)||0));
+  renderChannels(); updateAwarenessDisplay();
+}
+
+function onMax(id, v) {
+  S.maxs[id] = Math.max(S.mins[id]||0, Math.min(100, parseInt(v)||100));
+  renderChannels(); updateAwarenessDisplay();
+}
+
+// ── SPARKLINES ───────────────────────────────────────────────
+function drawSparklines() {
+  if (!CHANNELS.length) return;
+  const anchor = getAnchor();
+  CHANNELS.forEach(ch => {
+    const canvas = document.getElementById('spark-' + ch.id);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = 110, H = 44;
+    ctx.clearRect(0, 0, W, H);
+
+    const weight     = S.rois[ch.id] || ch.roiWeight;
+    const baseReturn = anchor * weight;
+    const baseSpend  = (S.baseAlloc[ch.id] || 1/CHANNELS.length) * S.budget * 1e6;
+    const curSpend   = (S.alloc[ch.id] || 0) * S.budget * 1e6;
+
+    const pts = [];
+    for (let r = 0.05; r <= 3.51; r += 0.05) {
+      let df;
+      if (r >= 1) {
+        df = Math.sqrt(1 / r);
+      } else {
+        switch (ch.belowBase) {
+          case 'rising': df = Math.sqrt(1 / r); break;
+          case 'flat':   df = Math.pow(1 / r, 0.2); break;
+          case 'cliff':  df = r >= 0.5 ? 1.0 : r / 0.5; break;
+          default:       df = 1.0;
+        }
+      }
+      pts.push({ r, y: baseReturn * df });
+    }
+
+    const maxY = Math.max(...pts.map(p => p.y));
+    const maxR = 3.5;
+    const pad  = { l: 3, r: 4, t: 4, b: 4 };
+    const plotW = W - pad.l - pad.r;
+    const plotH = H - pad.t - pad.b;
+
+    function toX(r) { return pad.l + (r / maxR) * plotW; }
+    function toY(y) { return pad.t + plotH - (y / maxY) * plotH; }
+
+    // Fill
+    ctx.beginPath();
+    ctx.moveTo(toX(pts[0].r), toY(pts[0].y));
+    pts.forEach(p => ctx.lineTo(toX(p.r), toY(p.y)));
+    ctx.lineTo(toX(pts[pts.length-1].r), toY(0));
+    ctx.lineTo(toX(pts[0].r), toY(0));
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(232,88,26,0.04)';
+    ctx.fill();
+
+    // Curve — blue below baseline, orange above
+    const drawSeg = (filter, color) => {
+      const seg = pts.filter(filter);
+      if (seg.length < 2) return;
+      ctx.beginPath();
+      ctx.moveTo(toX(seg[0].r), toY(seg[0].y));
+      seg.slice(1).forEach(p => ctx.lineTo(toX(p.r), toY(p.y)));
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    };
+    drawSeg(p => p.r <= 1.02, '#378ADD');
+    drawSeg(p => p.r >= 0.98, '#E8581A');
+
+    // Baseline dashed vertical
+    ctx.beginPath();
+    ctx.setLineDash([2, 2]);
+    ctx.moveTo(toX(1.0), pad.t);
+    ctx.lineTo(toX(1.0), pad.t + plotH);
+    ctx.strokeStyle = 'rgba(100,116,139,0.4)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Current allocation marker
+    const curR = baseSpend > 0 ? Math.min(curSpend / baseSpend, maxR) : 1;
+    ctx.beginPath();
+    ctx.moveTo(toX(curR), pad.t);
+    ctx.lineTo(toX(curR), pad.t + plotH);
+    ctx.strokeStyle = ch.color;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Dot at intersection
+    const curDF = (() => {
+      if (curR >= 1) return Math.sqrt(1 / curR);
+      switch (ch.belowBase) {
+        case 'rising': return Math.sqrt(1 / curR);
+        case 'flat':   return Math.pow(1 / curR, 0.2);
+        case 'cliff':  return curR >= 0.5 ? 1.0 : curR / 0.5;
+        default:       return 1.0;
+      }
+    })();
+    ctx.beginPath();
+    ctx.arc(toX(curR), toY(baseReturn * curDF), 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = ch.color;
+    ctx.fill();
+  });
+}
+
+function updateAwarenessDisplay() {
+  const combined = ((S.alloc['tv']||0) + (S.alloc['ctvdom']||0)) * 100;
+  const floor    = S.awarenessFloor;
+  const el       = document.getElementById('v-awareness-actual');
+  const warn     = document.getElementById('awareness-warning');
+  if (el) { el.textContent = combined.toFixed(0) + '%'; el.style.color = combined < floor ? 'var(--red)' : 'var(--orange)'; }
+  if (warn) warn.style.display = combined < floor ? '' : 'none';
+}
+
+function resetAll() {
+  CHANNELS.forEach(ch => {
+    S.alloc[ch.id] = ch.base || 1/CHANNELS.length;
+    S.mins[ch.id]  = ch.minDef;
+    S.maxs[ch.id]  = ch.maxDef;
+    S.cpms[ch.id]  = ch.cpmDef;
+    S.rois[ch.id]  = ch.roiWeight;
+    S.roiConfs[ch.id] = ch.roiConf;
+    S.cpmConfs[ch.id] = ch.cpmConf;
+  });
+  const allocSum = Object.values(S.alloc).reduce((t,v)=>t+v,0);
+  CHANNELS.forEach(ch => { S.alloc[ch.id] /= allocSum; });
+  S.baseAlloc = {};
+  CHANNELS.forEach(ch => { S.baseAlloc[ch.id] = S.alloc[ch.id]; });
+  S.baseAllocWeightedAvg = CHANNELS.reduce((s, ch) => s + (S.baseAlloc[ch.id] || 0) * ch.roiWeight, 0);
+  S.budget = C.budget; S.shoulder = 30; S.objective = 'roi'; S.awarenessFloor = 20; S.optimized = false;
+  document.getElementById('s-budget').value = C.budget;
+  document.getElementById('v-budget').textContent = '$' + C.budget.toFixed(1) + 'M';
+  document.getElementById('s-shoulder').value = 30;
+  document.getElementById('v-shoulder').textContent = 'Standard';
+  document.getElementById('s-awareness').value = 20;
+  document.getElementById('v-awareness').textContent = '20%';
+  document.querySelectorAll('.seg-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  const btn = document.getElementById('opt-btn');
+  btn.className = 'opt-btn'; btn.textContent = 'Run Optimizer';
+  document.getElementById('results-sec').style.display = 'none';
+  document.getElementById('narrative').style.display = 'none';
+  renderChannels(); renderAssumptions(); renderSensitivity(); renderSeason(); renderROITable(); updateHero();
+}
+
+// ── MARKET BUDGET STATE ──────────────────────────────────────────
+function initMarketBaseline() {
+  const totalBudget = S.budget * 1e6;
+  const domesticBudget = totalBudget * (1 - C.intlPct / 100);
+  const totalScore = C.markets.reduce((s, m) => s + m.score, 0);
+  MKT.domAlloc = {};
+  C.markets.forEach(m => {
+    MKT.domAlloc[m.id] = totalScore > 0 ? Math.round((m.score / totalScore) * domesticBudget) : 0;
+  });
+}
+
+// ── MARKET VIEW ──────────────────────────────────────────────────
+function renderMarketView() {
+  initMarketBaseline();
+  const totalBudget    = S.budget * 1e6;
+  const domesticBudget = totalBudget * (1 - C.intlPct / 100);
+  const totalAlloc     = Object.values(MKT.domAlloc).reduce((s,v)=>s+v,0);
+  const fillPct        = Math.min(100, Math.round((totalAlloc / totalBudget) * 100));
+
+  const view = document.getElementById('view-markets');
+
+  let html = "<div class=\"mkt-toolbar\">" +
+    "<div><div style=\"font-family:'Playfair Display';font-size:20px;font-weight:500;color:var(--ink);\">Market Budget Allocation</div>" +
+    "<div style=\"font-size:12px;color:var(--ink-4);margin-top:3px;font-style:italic;\">Weights from market scores set in Setup · " + C.markets.length + " active markets</div></div>" +
+    "<div style=\"display:flex;align-items:center;gap:12px;\">" +
+    "<button class=\"card-act\" style=\"font-size:12px;padding:7px 14px;border:1px solid var(--rule);border-radius:var(--r-xs);cursor:pointer;background:var(--surface);\" onclick=\"resetMarkets()\">Reset to score baseline</button>" +
+    "<button class=\"gen-btn\" onclick=\"applyMarkets()\">Apply to Media Plan →</button>" +
+    "</div></div>";
+
+  // Pool bar
+  html += "<div class=\"mkt-pool-bar\">" +
+    "<div class=\"mkt-pool-left\"><div class=\"mkt-pool-label\">Total allocated</div><div class=\"mkt-pool-value\" id=\"mkt-total-alloc\">$" + (totalAlloc/1e6).toFixed(1) + "M</div></div>" +
+    "<div class=\"mkt-pool-track-wrap\"><div class=\"mkt-pool-track\"><div class=\"mkt-pool-fill\" id=\"mkt-pool-fill\" style=\"width:" + fillPct + "%;\"></div></div>" +
+    "<div class=\"mkt-pool-labels\"><span>$0</span><span id=\"mkt-budget-max\">$" + (totalBudget/1e6).toFixed(1) + "M</span></div></div>" +
+    "<div class=\"mkt-pool-right\"><div class=\"mkt-pool-label\">Intl passive</div><div class=\"mkt-pool-value\" style=\"color:var(--ink-3);\">" + C.intlPct + "%</div></div>" +
+    "</div>";
+
+  // Market rows
+  html += "<div class=\"card\" style=\"margin-bottom:20px;\"><div class=\"card-head\"><div class=\"card-title\">" + C.name + " Target Markets</div>" +
+    "<span style=\"font-size:11px;color:var(--ink-4);\">Score-weighted · adjust sliders to override</span></div>";
+  html += "<div class=\"mkt-section-note\">Budget is distributed proportionally to market scores set in Setup. Adjust sliders below to override individual market budgets.</div>";
+
+  const maxAlloc = Math.max(...Object.values(MKT.domAlloc), 1);
+  C.markets.forEach(m => {
+    const amt     = MKT.domAlloc[m.id] || 0;
+    const pct     = ((amt / totalBudget) * 100).toFixed(1);
+    const sliderMax = Math.round(domesticBudget / 1e3 * 0.40);
+    const sliderVal = Math.round(amt / 1e3);
+    const barW    = Math.round((amt / maxAlloc) * 100);
+    html += "<div class=\"mkt-row\" id=\"mktrow-" + m.id + "\">" +
+      "<div class=\"mkt-row-top\">" +
+      "<div class=\"mkt-flag\">🇺🇸</div>" +
+      "<div class=\"mkt-info\"><div class=\"mkt-name\">" + m.name + "</div>" +
+      "<div class=\"mkt-meta\">Score: " + m.score + " · " + (m.tvHomes/1000).toFixed(0) + "k TV HH</div></div>" +
+      "<div class=\"mkt-pax\">" + pct + "%</div>" +
+      "<div class=\"mkt-budget-val\" id=\"mktval-" + m.id + "\">$" + (amt/1e6).toFixed(2) + "M</div>" +
+      "</div>" +
+      "<div class=\"mkt-slider-wrap\">" +
+      "<input type=\"range\" min=\"0\" max=\"" + sliderMax + "\" value=\"" + sliderVal + "\" step=\"10\" oninput=\"onMktSlider('" + m.id + "',this.value)\">" +
+      "<span class=\"mkt-pct-badge\" id=\"mktpct-" + m.id + "\">" + pct + "%</span>" +
+      "</div></div>";
+  });
+  html += "<div class=\"mkt-subtotal-row\"><span style=\"font-weight:500;color:var(--ink-2);\">Total domestic</span><span class=\"mkt-subtotal-val\" id=\"dom-subtotal\">$" + (totalAlloc/1e6).toFixed(1) + "M · " + Math.round((totalAlloc/totalBudget)*100) + "% of total</span></div>";
+  html += "</div>"; // /card
+
+  // Channel × Market Matrix
+  html += "<div style=\"margin-top:20px;\"><div class=\"mp-section-title\" style=\"display:flex;align-items:center;justify-content:space-between;\">" +
+    "<span>Channel Mix by Market</span>" +
+    "<span style=\"font-size:11px;color:var(--ink-4);font-weight:400;font-style:italic;\">Each market receives the optimizer channel mix, scaled to its budget</span>" +
+    "</div><div class=\"card\" id=\"mkt-channel-matrix-wrap\"></div></div>";
+
+  view.innerHTML = html;
+  renderChannelMarketMatrix();
+}
+
+function onMktSlider(id, val) {
+  const amt = parseInt(val) * 1000;
+  MKT.domAlloc[id] = amt;
+  const totalBudget = S.budget * 1e6;
+  const pct = ((amt / totalBudget) * 100).toFixed(1);
+  const valEl = document.getElementById('mktval-' + id);
+  const pctEl = document.getElementById('mktpct-' + id);
+  if (valEl) valEl.textContent = '$' + (amt/1e6).toFixed(2) + 'M';
+  if (pctEl) pctEl.textContent = pct + '%';
+  updateMarketTotals();
+  renderChannelMarketMatrix();
+}
+
+function updateMarketTotals() {
+  const totalBudget = S.budget * 1e6;
+  const totalAlloc  = Object.values(MKT.domAlloc).reduce((s,v)=>s+v,0);
+  const fillPct     = Math.min(100, Math.round((totalAlloc / totalBudget) * 100));
+  const el1 = document.getElementById('mkt-total-alloc');
+  const el2 = document.getElementById('mkt-pool-fill');
+  const el3 = document.getElementById('dom-subtotal');
+  if (el1) el1.textContent = '$' + (totalAlloc/1e6).toFixed(1) + 'M';
+  if (el2) el2.style.width = fillPct + '%';
+  if (el3) el3.textContent = '$' + (totalAlloc/1e6).toFixed(1) + 'M · ' + Math.round((totalAlloc/totalBudget)*100) + '% of total';
+}
+
+function renderChannelMarketMatrix() {
+  const wrap = document.getElementById('mkt-channel-matrix-wrap');
+  if (!wrap) return;
+  const markets    = C.markets.slice().sort((a,b)=>(MKT.domAlloc[b.id]||0)-(MKT.domAlloc[a.id]||0)).slice(0, 10);
+  const topChannels = [...CHANNELS].sort((a,b)=>(S.alloc[b.id]||0)-(S.alloc[a.id]||0)).slice(0, 6);
+
+  const COL_CH  = 160; // channel name column
+  const COL_MKT = 80;  // fixed width per market — enough for rotated label + bar
+  const totalW  = COL_CH + markets.length * COL_MKT;
+
+  const maxCell = (() => {
+    let max = 0;
+    topChannels.forEach(ch => markets.forEach(m => {
+      const v = (S.alloc[ch.id]||0) * (MKT.domAlloc[m.id]||0);
+      if (v > max) max = v;
+    }));
+    return max;
+  })();
+
+  // Header row with rotated market names
+  let html = "<div style=\"overflow-x:auto;width:100%;\">" +
+    "<div style=\"min-width:" + totalW + "px;\">";
+
+  html += "<div style=\"display:grid;grid-template-columns:" + COL_CH + "px " + markets.map(()=>COL_MKT+"px").join(' ') + ";background:var(--bg-warm);border-bottom:1px solid var(--rule);\">" +
+    "<div style=\"padding:8px 14px;font-size:9px;font-weight:600;color:var(--ink-4);text-transform:uppercase;letter-spacing:.7px;font-family:'JetBrains Mono';display:flex;align-items:flex-end;\">Channel</div>";
+  markets.forEach(m => {
+    const shortName = m.name.length > 14 ? m.name.slice(0, 13) + '…' : m.name;
+    html += "<div style=\"height:72px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;\">" +
+      "<div style=\"writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:500;color:var(--ink-3);white-space:nowrap;font-family:'JetBrains Mono';\">" + shortName + "</div>" +
+      "</div>";
+  });
+  html += "</div>";
+
+  // Data rows
+  topChannels.forEach(ch => {
+    html += "<div style=\"display:grid;grid-template-columns:" + COL_CH + "px " + markets.map(()=>COL_MKT+"px").join(' ') + ";border-bottom:1px solid var(--rule-light);transition:background .1s;\" onmouseover=\"this.style.background='var(--bg)'\" onmouseout=\"this.style.background=''\">" +
+      "<div style=\"padding:8px 14px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:500;color:var(--ink-2);\">" +
+        "<div style=\"width:8px;height:8px;border-radius:2px;background:" + ch.color + ";flex-shrink:0;\"></div>" + ch.name +
+      "</div>";
+    markets.forEach(m => {
+      const val  = (S.alloc[ch.id]||0) * (MKT.domAlloc[m.id]||0);
+      const barW = maxCell > 0 ? Math.max(2, Math.round((val/maxCell)*100)) : 0;
+      const amt  = val >= 1e6 ? '$'+(val/1e6).toFixed(1)+'M' : val >= 5e3 ? '$'+Math.round(val/1e3)+'k' : '';
+      html += "<div style=\"padding:6px 8px;\">" +
+        "<div style=\"height:22px;background:var(--rule-light);border-radius:3px;overflow:hidden;position:relative;\" title=\"" + ch.name + " · " + m.name + " · " + (val>=1000?'$'+Math.round(val/1e3)+'k':'<$1k') + "\">" +
+          "<div style=\"height:100%;width:" + barW + "%;background:" + ch.color + ";opacity:0.75;border-radius:3px;display:flex;align-items:center;padding-left:4px;\">" +
+            (barW > 30 && amt ? "<span style=\"font-size:8px;font-family:'JetBrains Mono';color:rgba(255,255,255,.9);white-space:nowrap;\">" + amt + "</span>" : "") +
+          "</div>" +
+        "</div>" +
+      "</div>";
+    });
+    html += "</div>";
+  });
+
+  html += "<div style=\"padding:8px 14px;font-size:10px;color:var(--ink-4);font-style:italic;border-top:1px solid var(--rule-light);\">Top 6 channels × top 10 markets by budget. Cell = channel % × market allocation.</div>";
+  html += "</div></div>";
+  wrap.innerHTML = html;
+}
+
+function applyMarkets() {
+  MKT.applied = true;
+  document.getElementById('mkt-badge').style.display = '';
+  switchView('mediaplan');
+  if (document.getElementById('mp-document').style.display !== 'none') generatePlan();
+}
+
+function resetMarkets() {
+  initMarketBaseline();
+  renderMarketView();
+}
+
+// ── FLOW CHART HELPER ────────────────────────────────────────────
+function getBroadcastWeeks(year, flight) {
+  const weeks = [];
+  let d = new Date(year, 0, 1);
+  while (d.getDay() !== 1) d.setDate(d.getDate() + 1);
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  while (d.getFullYear() === year) {
+    const m = d.getMonth();
+    const label = MONTHS[m] + ' ' + String(d.getDate()).padStart(2,'0');
+    const prevSunday = new Date(d); prevSunday.setDate(d.getDate()-1);
+    weeks.push({ label, monthNum: m, month: MONTHS[m], isMonthStart: d.getDate() <= 7 });
+    d.setDate(d.getDate() + 7);
+  }
+  if (flight === 'h1') return weeks.filter(w => w.monthNum < 6);
+  if (flight === 'h2') return weeks.filter(w => w.monthNum >= 6);
+  return weeks;
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return [r,g,b];
+}
+
+// ── MEDIA PLAN GENERATOR ─────────────────────────────────────────
+function generatePlan() {
+  if (!C.configured) return;
+  const year   = parseInt(document.getElementById('mp-year').value);
+  const flight = document.getElementById('mp-flight').value;
+  const weeks  = getBroadcastWeeks(year, flight);
+
+  document.getElementById('mp-doc-title').textContent = C.name + ' · Media Plan';
+  const flightLabel = flight==='full'?'Full Year': flight==='h1'?'H1 (Jan–Jun)':'H2 (Jul–Dec)';
+  document.getElementById('mp-doc-sub').textContent = 'Annual Media Plan · FY ' + year + ' · ' + flightLabel + ' · $' + S.budget.toFixed(1) + 'M Working Media';
+
+  const channelBudgets = {};
+  CHANNELS.forEach(ch => { channelBudgets[ch.id] = S.alloc[ch.id] * S.budget * 1e6; });
+
+  // Weekly spend per channel
+  const weeklySpend = {};
+  const scale = S.budget / 40; // scale factor vs $40M reference
+  CHANNELS.forEach(ch => {
+    weeklySpend[ch.id] = new Array(weeks.length).fill(0);
+    const pattern = ch.flight || new Array(12).fill(1);
+    const shoulder = S.shoulder / 100;
+    const activeWeeks = weeks.filter(w => pattern[w.monthNum] === 1);
+    if (!activeWeeks.length) return;
+    const seasonWeights = activeWeeks.map(w => {
+      let idx = C.season[w.monthNum] || 1;
+      if (['Aug','Sep','Oct'].includes(w.month)) idx += shoulder * 0.35;
+      return idx;
+    });
+    const totalSW = seasonWeights.reduce((s,v)=>s+v,0);
+    activeWeeks.forEach((w, i) => {
+      const wi = weeks.indexOf(w);
+      if (wi >= 0) weeklySpend[ch.id][wi] = (seasonWeights[i] / totalSW) * channelBudgets[ch.id];
+    });
+  });
+
+  // Header block
+  const fmtB = v => v >= 1e9 ? '$'+(v/1e9).toFixed(1)+'B' : v >= 1e6 ? '$'+(v/1e6).toFixed(1)+'M' : '$'+(v/1e3).toFixed(0)+'k';
+  const totalImpact = calcDiminishingReturns();
+  let metricLabel, metricVal, metricSub;
+  if (C.modelType === 'roas') {
+    const purchases = C.transactionValue > 0 ? Math.round(totalImpact / C.transactionValue) : 0;
+    metricLabel = 'Est. ' + C.transactionLabel + 's';
+    metricVal   = purchases.toLocaleString();
+    metricSub   = '$' + C.transactionValue + ' avg';
+  } else {
+    metricLabel = 'Economic Impact';
+    metricVal   = fmtB(totalImpact);
+    metricSub   = C.impactAnchor + ':1 anchor';
+  }
+  let wCPM = 0, tot = 0;
+  CHANNELS.forEach(ch => { const a=S.alloc[ch.id]||0; wCPM+=a*(S.cpms[ch.id]||ch.cpmDef); tot+=a; });
+  if (tot>0) wCPM/=tot;
+  const totalImps = (S.budget*1e6) / (wCPM/1000);
+  const impsLabel = totalImps>=1e9 ? (totalImps/1e9).toFixed(1)+'B imps' : (totalImps/1e6).toFixed(0)+'M imps';
+
+  document.getElementById('mp-header-block').innerHTML =
+    "<div class=\"mp-hb-left\">" +
+    "<div class=\"mp-hb-client\">" + C.name.toUpperCase() + "</div>" +
+    "<div class=\"mp-hb-title\">" + flightLabel + " Media Plan · FY " + year + "</div>" +
+    "<div class=\"mp-hb-sub\">$" + S.budget.toFixed(1) + "M Working Media · " + CHANNELS.length + " active channels · " + C.markets.length + " target markets</div>" +
+    "</div>" +
+    "<div class=\"mp-hb-right\">" +
+    "<div class=\"mp-hb-stat\"><div class=\"mp-hb-stat-val o\">$" + S.budget.toFixed(1) + "M</div><div class=\"mp-hb-stat-lbl\">Working Media</div></div>" +
+    "<div class=\"mp-hb-stat\"><div class=\"mp-hb-stat-val g\">" + metricVal + "</div><div class=\"mp-hb-stat-lbl\">" + metricLabel + "</div></div>" +
+    "<div class=\"mp-hb-stat\"><div class=\"mp-hb-stat-val\">" + impsLabel + "</div><div class=\"mp-hb-stat-lbl\">Total Impressions</div></div>" +
+    "<div class=\"mp-hb-stat\"><div class=\"mp-hb-stat-val\">$" + wCPM.toFixed(2) + "</div><div class=\"mp-hb-stat-lbl\">Blended CPM</div></div>" +
+    "</div>";
+
+  // Budget summary
+  const sorted = [...CHANNELS].sort((a,b) => channelBudgets[b.id]-channelBudgets[a.id]);
+  const maxBudget = Math.max(...sorted.map(ch=>channelBudgets[ch.id]),1);
+  let bsHtml = "<div class=\"mp-bs-row header\"><div class=\"mp-bs-cell\"></div><div class=\"mp-bs-cell\">Channel</div><div class=\"mp-bs-cell num\">Budget</div><div class=\"mp-bs-cell num\">Share</div><div class=\"mp-bs-cell num\">CPM</div><div class=\"mp-bs-cell num\">Impressions</div><div class=\"mp-bs-cell num\">Min%</div><div class=\"mp-bs-cell num\">Max%</div><div class=\"mp-bs-cell bar-cell\">Allocation</div></div>";
+  let totalBud=0, totalImpsCount=0;
+  sorted.forEach(ch => {
+    const bud  = channelBudgets[ch.id];
+    const pct  = ((bud/(S.budget*1e6))*100).toFixed(1);
+    const cpm  = S.cpms[ch.id]||ch.cpmDef;
+    const imps = bud/(cpm/1000);
+    const impsStr = imps>=1e9?(imps/1e9).toFixed(1)+'B':imps>=1e6?(imps/1e6).toFixed(0)+'M':(imps/1e3).toFixed(0)+'k';
+    const barW = Math.round((bud/maxBudget)*100);
+    totalBud+=bud; totalImpsCount+=imps;
+    bsHtml += "<div class=\"mp-bs-row\">" +
+      "<div class=\"mp-bs-cell\"><div class=\"mp-color-swatch\" style=\"background:" + ch.color + ";\"></div></div>" +
+      "<div class=\"mp-bs-cell\">" + ch.name + "</div>" +
+      "<div class=\"mp-bs-cell num\">$" + (bud/1e6).toFixed(2) + "M</div>" +
+      "<div class=\"mp-bs-cell num\">" + pct + "%</div>" +
+      "<div class=\"mp-bs-cell num\">$" + cpm.toFixed(2) + "</div>" +
+      "<div class=\"mp-bs-cell num\">" + impsStr + "</div>" +
+      "<div class=\"mp-bs-cell num\">" + (S.mins[ch.id]||0) + "%</div>" +
+      "<div class=\"mp-bs-cell num\">" + (S.maxs[ch.id]||100) + "%</div>" +
+      "<div class=\"mp-bs-cell bar-cell\"><div class=\"mp-bs-bar-wrap\"><div class=\"mp-bs-bar\" style=\"width:" + barW + "%;background:" + ch.color + ";\"></div></div></div>" +
+      "</div>";
+  });
+  const totalImpsStr = totalImpsCount>=1e9?(totalImpsCount/1e9).toFixed(1)+'B':totalImpsCount>=1e6?(totalImpsCount/1e6).toFixed(0)+'M':(totalImpsCount/1e3).toFixed(0)+'k';
+  bsHtml += "<div class=\"mp-bs-total-row\"><div class=\"mp-bs-cell\"></div><div class=\"mp-bs-cell\">Total</div><div class=\"mp-bs-cell num\">$" + S.budget.toFixed(2) + "M</div><div class=\"mp-bs-cell num\">100%</div><div class=\"mp-bs-cell num\">$" + wCPM.toFixed(2) + "</div><div class=\"mp-bs-cell num\">" + totalImpsStr + "</div><div class=\"mp-bs-cell num\"></div><div class=\"mp-bs-cell num\"></div><div class=\"mp-bs-cell bar-cell\"></div></div>";
+  document.getElementById('mp-budget-summary').innerHTML = bsHtml;
+
+  // Update market filter dropdown
+  const filterSelect = document.getElementById('flow-market-filter');
+  filterSelect.innerHTML = '<option value="all">All Markets (Total Budget)</option>';
+  C.markets.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = 'm:' + m.id;
+    opt.textContent = '🇺🇸 ' + m.name;
+    filterSelect.appendChild(opt);
+  });
+
+  renderFlowChart(weeks, weeklySpend, scale);
+  renderMonthlyChart(weeks, weeklySpend, scale);
+  renderFlightNotes(sorted);
+  renderLegend(sorted);
+
+  document.getElementById('mp-footer-note').textContent =
+    'Prepared by MMGY · Confidential — for ' + C.name + ' internal use only · All CPMs and impressions are benchmark estimates pending confirmed rate cards';
+
+  document.getElementById('mp-prompt').style.display   = 'none';
+  document.getElementById('mp-document').style.display = '';
+  document.getElementById('print-btn').style.display   = '';
+}
+
+function renderFlowChart(weeks, weeklySpend, scale) {
+  const LABEL_W = 180, CELL_W = 32;
+  const filterVal = document.getElementById('flow-market-filter').value;
+  const noteEl    = document.getElementById('flow-filter-note');
+
+  let mktScaleFactor = 1;
+  if (filterVal.startsWith('m:')) {
+    const mktId   = filterVal.slice(2);
+    const mkt     = C.markets.find(m => m.id === mktId);
+    const mktAlloc = MKT.domAlloc[mktId] || 0;
+    if (mkt && mktAlloc > 0) {
+      mktScaleFactor = mktAlloc / (S.budget * 1e6);
+      noteEl.textContent = 'Showing ' + mkt.name + ' · $' + (mktAlloc/1e6).toFixed(1) + 'M (' + ((mktAlloc/(S.budget*1e6))*100).toFixed(0) + '% of total)';
+    }
+  } else {
+    noteEl.textContent = 'Showing full budget · select a market to scale by its allocation';
+  }
+
+  const totalW = LABEL_W + weeks.length * CELL_W;
+  let html = "<div class=\"flow-wrap\" style=\"width:" + totalW + "px;\">";
+  html += "<div class=\"flow-header-row\" style=\"width:" + totalW + "px;\">";
+  html += "<div class=\"flow-ch-label\" style=\"width:" + LABEL_W + "px;\">Channel</div>";
+  html += "<div class=\"flow-weeks-header\">";
+  weeks.forEach(w => {
+    html += "<div class=\"flow-wk-hdr" + (w.isMonthStart ? " month-start" : "") + "\" style=\"width:" + CELL_W + "px;\">";
+    if (w.isMonthStart) html += "<span class=\"wk-month\">" + w.month + "</span>";
+    html += "<span>" + w.label.slice(5) + "</span></div>";
+  });
+  html += "</div></div>";
+
+  CHANNELS.forEach(ch => {
+    const totalRaw = weeklySpend[ch.id].reduce((s,v)=>s+v,0);
+    if (totalRaw < 100) return;
+    const totalScaled = totalRaw * scale * mktScaleFactor;
+    const maxRaw = Math.max(...weeklySpend[ch.id], 1);
+    html += "<div class=\"flow-row\" style=\"width:" + totalW + "px;\">";
+    html += "<div class=\"flow-row-label\" style=\"width:" + LABEL_W + "px;\"><div class=\"mp-color-swatch\" style=\"background:" + ch.color + ";height:10px;width:10px;border-radius:2px;flex-shrink:0;\"></div><div><div class=\"flow-row-name\">" + ch.name + "</div><div class=\"flow-row-type\">$" + (totalScaled/1e6).toFixed(2) + "M</div></div></div>";
+    html += "<div class=\"flow-cells\">";
+    weeks.forEach((w, wi) => {
+      const rawSpend = weeklySpend[ch.id][wi];
+      const spend    = rawSpend * scale * mktScaleFactor;
+      const isActive = rawSpend > 100;
+      const bgAlpha  = isActive ? Math.min(1, Math.max(0.18, (rawSpend/maxRaw)*0.82+0.18)) : 0;
+      let cellBg = 'transparent';
+      if (isActive) {
+        try { const [r,g,b]=hexToRgb(ch.color); cellBg='rgb('+Math.round(r*bgAlpha+255*(1-bgAlpha))+','+Math.round(g*bgAlpha+255*(1-bgAlpha))+','+Math.round(b*bgAlpha+255*(1-bgAlpha))+')'; } catch(e) { cellBg=ch.color; }
+      }
+      const amtLabel = isActive && spend >= 5000 ? '$'+(spend>=1e6?(spend/1e6).toFixed(1)+'M':(spend/1e3).toFixed(0)+'k') : '';
+      const tipText  = isActive ? ch.name+' · Wk '+w.label+' · $'+(spend/1e3).toFixed(1)+'k' : '';
+      const amtSpan  = (isActive&&amtLabel) ? '<span class="flow-bar-amt" style="color:'+(bgAlpha>0.55?'rgba(255,255,255,.92)':ch.color)+';">'+amtLabel+'</span>' : '';
+      const barDiv   = isActive ? '<div class="flow-bar" style="background:'+cellBg+';">'+amtSpan+'</div>' : '';
+      const tipDiv   = isActive ? '<div class="flow-cell-tip">'+tipText+'</div>' : '';
+      html += '<div class="'+(isActive?'flow-cell active':'flow-cell')+'" style="width:'+CELL_W+'px;">'+barDiv+tipDiv+'</div>';
+    });
+    html += "</div></div>";
+  });
+
+  html += "<div class=\"flow-total-row\" style=\"width:" + totalW + "px;\">";
+  html += "<div class=\"flow-total-label\" style=\"width:" + LABEL_W + "px;\">Weekly Total</div>";
+  html += "<div class=\"flow-total-cells\">";
+  weeks.forEach((w,wi) => {
+    const t = CHANNELS.reduce((s,ch)=>s+(weeklySpend[ch.id][wi]||0),0) * scale * mktScaleFactor;
+    const tLabel = t > 200 ? '$'+(t/1e3).toFixed(0)+'k' : '';
+    html += '<div class="'+(t>200?'flow-total-cell has-spend':'flow-total-cell')+'" style="width:'+CELL_W+'px;">'+tLabel+'</div>';
+  });
+  html += "</div></div></div>";
+  document.getElementById('mp-flow').innerHTML = html;
+}
+
+function applyFlowFilter() { if (C.configured) generatePlan(); }
+
+function renderMonthlyChart(weeks, weeklySpend, scale) {
+  const monthly = new Array(12).fill(0);
+  weeks.forEach((w,wi) => {
+    CHANNELS.forEach(ch => { monthly[w.monthNum] += (weeklySpend[ch.id][wi]||0) * scale; });
+  });
+  const maxM = Math.max(...monthly, 1);
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let html = '';
+  monthly.forEach((v,i) => {
+    if (v < 100) return;
+    const w = Math.round((v/maxM)*100);
+    const amtStr = v>=1e6?'$'+(v/1e6).toFixed(2)+'M':'$'+(v/1e3).toFixed(0)+'k';
+    html += "<div class=\"mp-monthly-row\">" +
+      "<div class=\"mp-monthly-lbl\">" + MONTHS[i] + "</div>" +
+      "<div class=\"mp-monthly-track\"><div class=\"mp-monthly-fill\" style=\"width:" + w + "%;background:var(--orange-soft);color:#fff;\">" + (w>20?amtStr:'') + "</div></div>" +
+      "<div class=\"mp-monthly-amt\">" + (w<=20?amtStr:'') + "</div>" +
+      "</div>";
+  });
+  document.getElementById('mp-monthly-chart').innerHTML = html;
+}
+
+function renderFlightNotes(sorted) {
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let html = "<div style=\"padding:4px 20px;\">";
+  sorted.forEach(ch => {
+    const activeMonths = (ch.flight||new Array(12).fill(1)).map((v,i)=>v?MONTHS[i]:null).filter(Boolean);
+    const flightStr = activeMonths.length === 12 ? 'Always-on' : activeMonths.join(', ');
+    const budget = S.alloc[ch.id] * S.budget;
+    html += "<div class=\"fn-row\">" +
+      "<div class=\"fn-ch\"><div class=\"fn-dot\" style=\"background:" + ch.color + ";\"></div>" + ch.name + "</div>" +
+      "<div class=\"fn-text\"><strong>$" + budget.toFixed(1) + "M · " + Math.round(S.alloc[ch.id]*100) + "% of budget · " + flightStr + ".</strong> " + ch.type + " · CPM $" + (S.cpms[ch.id]||ch.cpmDef).toFixed(2) + " · efficiency weight " + (S.rois[ch.id]||ch.roiWeight).toFixed(2) + ".</div>" +
+      "</div>";
+  });
+  html += "</div>";
+  document.getElementById('mp-notes').innerHTML = html;
+}
+
+function renderLegend(sorted) {
+  document.getElementById('mp-legend-items').innerHTML = sorted.map(ch =>
+    "<div class=\"leg-item\"><div class=\"leg-swatch\" style=\"background:" + ch.color + ";\"></div>" + ch.name + "</div>"
+  ).join('');
+}
+
+function printPlan() { window.print(); }
+
+// ── BOOT ─────────────────────────────────────────────────────────
+function boot() {
+  // Surface JS errors with line numbers in console
+  window.addEventListener('error', e => {
+    console.error('ERROR at line ' + e.lineno + ': ' + e.message, e.filename);
+  });
+  // Render channel toggles (defaults to destination)
+  onVerticalChange();
+  // Render seasonality editor
+  renderSeasonEditor();
+  // Build DMA multi-select
+  buildDMASelect();
+
+  // Tab bar
+  document.getElementById('tab-bar').addEventListener('click', e => {
+    const t = e.target.closest('.tab'); if (!t) return;
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x===t));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.toggle('active', x.id==='pane-'+t.dataset.pane));
+  });
+}
+
+boot();
+</script>
+</body>
+</html>
