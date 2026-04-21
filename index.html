@@ -458,21 +458,15 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     SETUP VIEW
-════════════════════════════════════════════════════════ -->
+<!-- SETUP VIEW -->
 <div class="app" id="view-setup">
-
-  <div style="max-width:900px;margin:0 auto;">
+  <div style="max-width:960px;margin:0 auto;">
 
     <!-- CLIENT INFO -->
     <div style="margin-bottom:8px;">
-      <div class="setup-label">
-        <span>Client Information</span>
-        <div class="setup-label-line"></div>
-      </div>
+      <div class="setup-label"><span>Client Information</span><div class="setup-label-line"></div></div>
     </div>
-    <div class="setup-grid">
+    <div class="setup-grid" style="margin-bottom:24px;">
       <div class="card" style="padding:20px 24px;">
         <div class="setup-field">
           <label>Client Name</label>
@@ -489,76 +483,70 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
             <option value="other">Other Travel Brand</option>
           </select>
         </div>
-        <div class="setup-field">
-          <label>Total Working Media Budget ($M)</label>
-          <input type="number" id="cfg-budget" value="10" min="0.5" max="500" step="0.5" oninput="onSetupChange()">
-          <div class="hint">Annual working media only — excludes agency fees, production, and tech.</div>
-        </div>
       </div>
       <div class="card" style="padding:20px 24px;">
         <div class="setup-field">
-          <label>Economic Performance Model</label>
-          <select id="cfg-model-type" onchange="onModelTypeChange()">
-            <option value="roas">ROAS — maximize revenue vs. spend</option>
-            <option value="impact">Impact Multiplier — tourism economic impact</option>
-          </select>
+          <label>ROAS Goal (performance benchmark)</label>
+          <input type="number" id="cfg-roas-target" value="8" min="1" max="200" step="0.5" oninput="onSetupChange()">
+          <div class="hint">Used as a comparison target in the optimizer — not a model input.</div>
         </div>
-        <div id="cfg-roas-fields">
-          <div class="setup-field">
-            <label>Blended ROAS Target</label>
-            <input type="number" id="cfg-roas-target" value="8" min="1" max="100" step="0.5" oninput="onSetupChange()">
-            <div class="hint">Expected revenue return per $1 of media spend across all channels blended.</div>
-          </div>
-          <div class="setup-field">
-            <label>Avg Transaction Value ($)</label>
-            <input type="number" id="cfg-transaction-value" value="100" min="1" step="1" oninput="onSetupChange()">
-          </div>
-          <div class="setup-field">
-            <label>Transaction Label</label>
-            <input type="text" id="cfg-transaction-label" value="Purchase" placeholder="e.g. Ticket, Booking, Room Night" oninput="onSetupChange()">
-          </div>
+        <div class="setup-field">
+          <label>Avg Transaction Value ($)</label>
+          <input type="number" id="cfg-transaction-value" value="100" min="1" step="1" oninput="onSetupChange()">
         </div>
-        <div id="cfg-impact-fields" style="display:none;">
-          <div class="setup-field">
-            <label>Economic Impact Anchor ($ per $1 of media)</label>
-            <input type="number" id="cfg-impact-anchor" value="434" min="1" step="1" oninput="onSetupChange()">
-          </div>
-          <div class="setup-field">
-            <label>Anchor Source / Citation</label>
-            <input type="text" id="cfg-impact-source" placeholder="e.g. Tourism Economics 2024" oninput="onSetupChange()">
-          </div>
+        <div class="setup-field">
+          <label>Transaction Label</label>
+          <input type="text" id="cfg-transaction-label" value="Purchase" placeholder="e.g. Ticket, Booking, Room Night" oninput="onSetupChange()">
         </div>
       </div>
     </div>
 
     <!-- CHANNEL ACTIVATION -->
-    <div style="margin-bottom:8px;margin-top:8px;">
-      <div class="setup-label">
-        <span>Active Channel Mix</span>
-        <div class="setup-label-line"></div>
-      </div>
-      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Select the channels in your client's media plan. Inactive channels are excluded from the optimizer entirely.</div>
+    <div style="margin-bottom:8px;">
+      <div class="setup-label"><span>Active Channel Mix</span><div class="setup-label-line"></div></div>
+      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Select active channels. Only selected channels appear in the performance data table.</div>
     </div>
     <div class="card" style="padding:20px 24px;margin-bottom:24px;">
       <div class="ch-toggle-grid" id="ch-toggle-grid"></div>
     </div>
 
+    <!-- PERFORMANCE DATA ENTRY -->
+    <div style="margin-bottom:8px;">
+      <div class="setup-label"><span>Current Performance Data</span><div class="setup-label-line"></div></div>
+      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Enter current annual spend and observed ROAS per channel. The optimizer uses this as its baseline — allocation %, curve positions, and efficiency weights are all derived from what you enter here.</div>
+    </div>
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:1fr 180px 160px 130px;gap:0;padding:9px 20px;background:var(--bg-warm);border-bottom:1px solid var(--rule);font-size:10px;font-weight:600;color:var(--ink-4);text-transform:uppercase;letter-spacing:.8px;font-family:'JetBrains Mono';">
+        <div>Channel</div>
+        <div style="text-align:right;">Annual Spend ($)</div>
+        <div style="text-align:right;">Observed ROAS</div>
+        <div style="text-align:right;">Implied Weight</div>
+      </div>
+      <div id="perf-data-rows"></div>
+      <div style="display:grid;grid-template-columns:1fr 180px 160px 130px;gap:0;padding:12px 20px;background:var(--orange-wash);border-top:2px solid var(--orange);align-items:center;">
+        <div style="font-size:12px;font-weight:600;color:var(--ink-2);font-family:'JetBrains Mono';">TOTAL / BLENDED</div>
+        <div style="text-align:right;"><span style="font-family:'JetBrains Mono';font-size:13px;font-weight:600;color:var(--ink);" id="perf-total-spend">$0</span></div>
+        <div style="text-align:right;">
+          <span style="font-family:'JetBrains Mono';font-size:13px;font-weight:600;color:var(--orange);" id="perf-blended-roas">—</span>
+          <div style="font-size:10px;color:var(--ink-4);margin-top:2px;">blended actual</div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--ink-4);font-family:'JetBrains Mono';">vs <span id="perf-goal-val">8x</span> goal</div>
+      </div>
+    </div>
+
     <!-- SEASONALITY -->
     <div style="margin-bottom:8px;">
-      <div class="setup-label">
-        <span>Seasonality Index</span>
-        <div class="setup-label-line"></div>
-      </div>
-      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Set the relative investment weight per month. Higher = more spend. All months are relative to each other — the optimizer distributes budget proportionally.</div>
+      <div class="setup-label"><span>Seasonality Index</span><div class="setup-label-line"></div></div>
+      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Set relative investment weight per month. The optimizer distributes budget proportionally to this index.</div>
     </div>
     <div class="card" style="padding:20px 24px;margin-bottom:24px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
         <span style="font-size:12px;font-weight:500;color:var(--ink-2);">Preset:</span>
         <select style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'Figtree';font-size:12px;background:var(--surface);" onchange="applySeasonPreset(this.value)">
           <option value="">— Custom —</option>
-          <option value="orlando">Orlando / Sun & Beach (peak Q1+Q4)</option>
-          <option value="ski">Ski / Winter (peak Dec–Mar)</option>
-          <option value="summer">Summer / Coastal (peak Jun–Aug)</option>
+          <option value="orlando">Orlando / Sun &amp; Beach (peak Q1+Q4)</option>
+          <option value="ski">Ski / Winter (peak Dec-Mar)</option>
+          <option value="summer">Summer / Coastal (peak Jun-Aug)</option>
           <option value="urban">Urban / City (even, slight spring/fall bias)</option>
           <option value="business">Business Travel (weekday-heavy, even months)</option>
           <option value="alwayson">Always-On (flat)</option>
@@ -569,58 +557,31 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 
     <!-- MARKETS -->
     <div style="margin-bottom:8px;">
-      <div class="setup-label">
-        <span>Target Markets</span>
-        <div class="setup-label-line"></div>
-      </div>
-      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Select markets from all 210 Nielsen DMAs. Assign a score (1–100) to weight budget allocation — higher score = larger share.</div>
+      <div class="setup-label"><span>Target Markets</span><div class="setup-label-line"></div></div>
+      <div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;">Select markets from all 210 Nielsen DMAs. Assign a score (1-100) to weight budget allocation.</div>
     </div>
     <div class="card" style="padding:20px 24px;margin-bottom:24px;">
-
-      <!-- DMA PICKER -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
         <div>
           <div style="font-size:12px;font-weight:500;color:var(--ink-2);margin-bottom:8px;">Browse &amp; Select DMAs</div>
-
-          <!-- filter + quick-select toolbar -->
           <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
-            <input id="dma-filter" type="text" placeholder="Filter by name…"
-              style="flex:1;min-width:120px;padding:6px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'Figtree';font-size:12px;background:var(--surface);"
-              oninput="filterDMAList(this.value)">
-            <button onclick="quickSelectDMAs('top10')"  style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--ink-2);white-space:nowrap;">Top 10</button>
-            <button onclick="quickSelectDMAs('top25')"  style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--ink-2);white-space:nowrap;">Top 25</button>
-            <button onclick="quickSelectDMAs('top50')"  style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--ink-2);white-space:nowrap;">Top 50</button>
-            <button onclick="quickSelectDMAs('clear')"  style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--red);white-space:nowrap;">Clear</button>
+            <input id="dma-filter" type="text" placeholder="Filter by name..." style="flex:1;min-width:120px;padding:6px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'Figtree';font-size:12px;background:var(--surface);" oninput="filterDMAList(this.value)">
+            <button onclick="quickSelectDMAs('top10')" style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--ink-2);white-space:nowrap;">Top 10</button>
+            <button onclick="quickSelectDMAs('top25')" style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--ink-2);white-space:nowrap;">Top 25</button>
+            <button onclick="quickSelectDMAs('top50')" style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--ink-2);white-space:nowrap;">Top 50</button>
+            <button onclick="quickSelectDMAs('clear')" style="padding:5px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-size:11px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--red);white-space:nowrap;">Clear</button>
           </div>
-
-          <!-- grouped multi-select -->
-          <select id="dma-multiselect" multiple
-            style="width:100%;height:260px;border:1px solid var(--rule);border-radius:var(--r-sm);font-family:'Figtree';font-size:12px;color:var(--ink);background:var(--surface);padding:4px 0;"
-            onchange="onDMAMultiSelect()"></select>
-          <div style="font-size:10px;color:var(--ink-4);margin-top:5px;font-style:italic;">Hold Ctrl / Cmd to select multiple. Click a selected market to deselect.</div>
+          <select id="dma-multiselect" multiple style="width:100%;height:220px;border:1px solid var(--rule);border-radius:var(--r-sm);font-family:'Figtree';font-size:12px;color:var(--ink);background:var(--surface);padding:4px 0;" onchange="onDMAMultiSelect()"></select>
+          <div style="font-size:10px;color:var(--ink-4);margin-top:5px;font-style:italic;">Hold Ctrl / Cmd to select multiple.</div>
         </div>
-
         <div>
-          <div style="font-size:12px;font-weight:500;color:var(--ink-2);margin-bottom:6px;">Options</div>
-          <div class="setup-field" style="margin-bottom:10px;">
-            <label>International Visitor % (passive — no media spend)</label>
+          <div class="setup-field">
+            <label>International Visitor % (passive)</label>
             <input type="number" id="cfg-intl-pct" value="0" min="0" max="80" step="1" oninput="onSetupChange()">
-            <div class="hint">Visitors from outside the US who come without media influence. Excluded from market budget allocation.</div>
-          </div>
-          <div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:var(--r-sm);border:1px solid var(--rule);">
-            <div style="font-size:11px;font-weight:600;color:var(--ink-3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;font-family:'JetBrains Mono';">Tiers</div>
-            <div style="font-size:11px;color:var(--ink-4);line-height:2;">
-              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Major</span>#1–10 · 2M+ HH<br>
-              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Large</span>#11–30 · 1–2M HH<br>
-              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Medium</span>#31–75 · 500k–1M HH<br>
-              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Small</span>#76–150 · 100k–500k HH<br>
-              <span style="display:inline-block;width:70px;font-weight:500;color:var(--ink-2);">Regional</span>#151–210 · &lt;100k HH
-            </div>
+            <div class="hint">Excluded from market budget allocation.</div>
           </div>
         </div>
       </div>
-
-      <!-- selected market score editor -->
       <div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
           <div style="font-size:12px;font-weight:500;color:var(--ink-2);">Selected Markets &amp; Scores</div>
@@ -630,13 +591,12 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
           <div style="font-size:12px;color:var(--ink-4);font-style:italic;padding:12px 0;">No markets selected yet.</div>
         </div>
       </div>
-
     </div>
 
     <!-- LAUNCH -->
     <div id="launch-error" style="display:none;margin-bottom:12px;padding:10px 16px;background:var(--red-pale);border:1px solid var(--red);border-radius:var(--r-sm);font-size:13px;color:var(--red);font-weight:500;"></div>
     <div style="display:flex;justify-content:flex-end;gap:12px;padding-bottom:40px;">
-      <button class="setup-cta" onclick="launchTool()">Launch Optimizer →</button>
+      <button class="setup-cta" onclick="launchTool()">Launch Optimizer &rarr;</button>
     </div>
 
   </div>
@@ -1130,6 +1090,7 @@ let C = {
   markets: [], // [{id, name, score, tvHomes}]
   intlPct: 0,
   inputMode: 'weight',
+  perfData: {},
   configured: false,
 };
 
@@ -1137,7 +1098,7 @@ let C = {
 let S = {
   budget: 10, objective: 'roi', shoulder: 30, awarenessFloor: 20,
   alloc: {}, mins: {}, maxs: {}, cpms: {}, rois: {}, roiConfs: {}, cpmConfs: {},
-  baseAlloc: {},
+  baseAlloc: {}, baseSpend: {}, baseAllocWeightedAvg: 0,
   optimized: false,
 };
 
@@ -1149,23 +1110,24 @@ let MKT = { domAlloc: {}, applied: false };
 
 // ── SETUP HELPERS ───────────────────────────────────────────────
 
+// ── SETUP HELPERS ───────────────────────────────────────────────
+
 function onSetupChange() {
   C.name             = (document.getElementById('cfg-client-name')?.value || '').trim();
-  C.budget           = parseFloat(document.getElementById('cfg-budget')?.value) || 10;
-  C.modelType        = document.getElementById('cfg-model-type')?.value || 'roas';
   C.roasTarget       = parseFloat(document.getElementById('cfg-roas-target')?.value) || 8;
   C.transactionValue = parseFloat(document.getElementById('cfg-transaction-value')?.value) || 100;
   C.transactionLabel = (document.getElementById('cfg-transaction-label')?.value || '').trim() || 'Purchase';
-  C.impactAnchor     = parseFloat(document.getElementById('cfg-impact-anchor')?.value) || 434;
-  C.impactSource     = (document.getElementById('cfg-impact-source')?.value || '').trim();
   C.intlPct          = parseFloat(document.getElementById('cfg-intl-pct')?.value) || 0;
+  // Update goal display in perf table
+  const goalEl = document.getElementById('perf-goal-val');
+  if (goalEl) goalEl.textContent = C.roasTarget.toFixed(1) + 'x';
   updateMarketScoreTotal();
+  updatePerfTotals();
 }
 
 function onVerticalChange() {
   onSetupChange();
-  const v = document.getElementById('cfg-vertical').value;
-  // Suggest sensible defaults per vertical
+  const v = document.getElementById('cfg-vertical')?.value || 'destination';
   const defaults = {
     destination: ['search','ota','social','dv360','digvid','ctvdom','tv','audio','ooh','print'],
     attraction:  ['search','ota','social','dv360','digvid','ctvdom','ooh','print'],
@@ -1174,16 +1136,87 @@ function onVerticalChange() {
     airline:     ['search','metasearch','ota','social','dv360','digvid'],
     other:       ['search','social','dv360','digvid','ctvdom'],
   };
-  const suggested = defaults[v] || defaults.other;
-  C.activeChannelIds = suggested;
+  C.activeChannelIds = defaults[v] || defaults.other;
   renderChannelToggles();
+  renderPerfDataTable();
 }
 
-function onModelTypeChange() {
-  onSetupChange();
-  const t = document.getElementById('cfg-model-type').value;
-  document.getElementById('cfg-roas-fields').style.display  = t === 'roas'   ? '' : 'none';
-  document.getElementById('cfg-impact-fields').style.display = t === 'impact' ? '' : 'none';
+// ── PERFORMANCE DATA TABLE ───────────────────────────────────────
+// C.perfData = { [chId]: { spend: number, roas: number } }
+
+function renderPerfDataTable() {
+  const rows = document.getElementById('perf-data-rows');
+  if (!rows) return;
+  let html = '';
+  MASTER_CHANNELS.filter(ch => C.activeChannelIds.includes(ch.id)).forEach(ch => {
+    const pd = C.perfData[ch.id] || { spend: '', roas: '' };
+    const weight = pd.roas && C.roasTarget ? (pd.roas / C.roasTarget).toFixed(2) : '—';
+    html += "<div style=\"display:grid;grid-template-columns:1fr 180px 160px 130px;gap:0;padding:10px 20px;border-bottom:1px solid var(--rule-light);align-items:center;transition:background .1s;\" onmouseover=\"this.style.background='var(--bg)'\" onmouseout=\"this.style.background=''\">" +
+      "<div style=\"display:flex;align-items:center;gap:9px;\">" +
+        "<div style=\"width:9px;height:9px;border-radius:2px;background:" + ch.color + ";flex-shrink:0;\"></div>" +
+        "<div><div style=\"font-size:13px;font-weight:500;color:var(--ink);\">" + ch.name + "</div>" +
+        "<div style=\"font-size:10px;color:var(--ink-4);\">" + ch.type + "</div></div>" +
+      "</div>" +
+      "<div style=\"display:flex;justify-content:flex-end;padding-right:12px;\">" +
+        "<input type=\"number\" placeholder=\"e.g. 4200000\" value=\"" + (pd.spend || '') + "\" min=\"0\" step=\"10000\" " +
+        "style=\"width:148px;padding:7px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'JetBrains Mono';font-size:12px;text-align:right;background:var(--bg);\" " +
+        "oninput=\"onPerfInput('" + ch.id + "','spend',this.value)\" " +
+        "onfocus=\"this.style.borderColor='var(--orange)';this.style.background='var(--surface)'\" " +
+        "onblur=\"this.style.borderColor='';this.style.background='var(--bg)'\">" +
+      "</div>" +
+      "<div style=\"display:flex;justify-content:flex-end;padding-right:12px;\">" +
+        "<input type=\"number\" placeholder=\"e.g. 18.5\" value=\"" + (pd.roas || '') + "\" min=\"0\" step=\"0.1\" " +
+        "style=\"width:128px;padding:7px 10px;border:1px solid var(--rule);border-radius:var(--r-xs);font-family:'JetBrains Mono';font-size:12px;text-align:right;background:var(--bg);\" " +
+        "oninput=\"onPerfInput('" + ch.id + "','roas',this.value)\" " +
+        "onfocus=\"this.style.borderColor='var(--orange)';this.style.background='var(--surface)'\" " +
+        "onblur=\"this.style.borderColor='';this.style.background='var(--bg)'\">" +
+      "</div>" +
+      "<div style=\"text-align:right;font-family:'JetBrains Mono';font-size:12px;font-weight:500;color:" + (weight !== '—' ? 'var(--orange)' : 'var(--ink-4)') + ";padding-right:4px;\">" + weight + "</div>" +
+      "</div>";
+  });
+  if (!html) html = "<div style=\"padding:20px;font-size:12px;color:var(--ink-4);font-style:italic;\">Select channels above to enter performance data.</div>";
+  rows.innerHTML = html;
+  updatePerfTotals();
+}
+
+function onPerfInput(id, field, val) {
+  if (!C.perfData[id]) C.perfData[id] = { spend: '', roas: '' };
+  C.perfData[id][field] = parseFloat(val) || '';
+  // Re-render just the implied weight for this row without full re-render
+  updatePerfTotals();
+  // Update weight display inline
+  const pd = C.perfData[id];
+  const weight = pd.roas && C.roasTarget ? (pd.roas / C.roasTarget).toFixed(2) : '—';
+  const allRows = document.querySelectorAll('#perf-data-rows > div');
+  const activeIds = MASTER_CHANNELS.filter(ch => C.activeChannelIds.includes(ch.id)).map(ch => ch.id);
+  const rowIdx = activeIds.indexOf(id);
+  if (allRows[rowIdx]) {
+    const weightCell = allRows[rowIdx].children[3];
+    if (weightCell) {
+      weightCell.textContent = weight;
+      weightCell.style.color = weight !== '—' ? 'var(--orange)' : 'var(--ink-4)';
+    }
+  }
+}
+
+function updatePerfTotals() {
+  const activeIds = C.activeChannelIds;
+  let totalSpend = 0, totalRevenue = 0, filledCount = 0;
+  activeIds.forEach(id => {
+    const pd = C.perfData[id];
+    if (pd && pd.spend && pd.roas) {
+      totalSpend   += pd.spend;
+      totalRevenue += pd.spend * pd.roas;
+      filledCount++;
+    }
+  });
+  const blendedROAS = totalSpend > 0 ? totalRevenue / totalSpend : 0;
+  const totalEl = document.getElementById('perf-total-spend');
+  const roasEl  = document.getElementById('perf-blended-roas');
+  const goalEl  = document.getElementById('perf-goal-val');
+  if (totalEl) totalEl.textContent = totalSpend >= 1e6 ? '$' + (totalSpend/1e6).toFixed(2) + 'M' : totalSpend > 0 ? '$' + Math.round(totalSpend/1e3) + 'k' : '$0';
+  if (roasEl)  roasEl.textContent  = blendedROAS > 0 ? blendedROAS.toFixed(1) + 'x' : '—';
+  if (goalEl)  goalEl.textContent  = (C.roasTarget || 8).toFixed(1) + 'x';
 }
 
 function renderChannelToggles() {
@@ -1203,6 +1236,7 @@ function toggleChannel(id) {
   if (idx >= 0) C.activeChannelIds.splice(idx, 1);
   else C.activeChannelIds.push(id);
   renderChannelToggles();
+  renderPerfDataTable();
 }
 
 // ── SEASON EDITOR ───────────────────────────────────────────────
@@ -1405,40 +1439,57 @@ function launchTool() {
   if (C.markets.length === 0) {
     showLaunchError('Please select at least one market from the DMA list.'); return;
   }
+  // Validate perf data — at least 2 channels need spend + ROAS
+  const filledChannels = C.activeChannelIds.filter(id => {
+    const pd = C.perfData[id];
+    return pd && pd.spend > 0 && pd.roas > 0;
+  });
+  if (filledChannels.length < 2) {
+    showLaunchError('Please enter spend and ROAS for at least 2 channels.'); return;
+  }
 
   onSetupChange();
   C.configured = true;
 
-  // Build CHANNELS from active selection
-  CHANNELS = MASTER_CHANNELS.filter(ch => C.activeChannelIds.includes(ch.id));
+  // Build CHANNELS — only channels that have perf data entered
+  CHANNELS = MASTER_CHANNELS.filter(ch =>
+    C.activeChannelIds.includes(ch.id) &&
+    C.perfData[ch.id] && C.perfData[ch.id].spend > 0 && C.perfData[ch.id].roas > 0
+  );
 
-  // Initialize S from C
-  S.budget        = C.budget;
+  // Derive budget and allocations from actual perf data
+  const totalSpend = CHANNELS.reduce((s, ch) => s + (C.perfData[ch.id].spend || 0), 0);
+  C.budget = totalSpend / 1e6; // store in $M
+
+  // Initialize S from actual performance data
+  S.budget         = C.budget;
   S.awarenessFloor = hasAwarenessChannels() ? 20 : 0;
-  S.optimized     = false;
-  S.objective     = 'roi';
-  S.shoulder      = 30;
+  S.optimized      = false;
+  S.objective      = 'roi';
+  S.shoulder       = 30;
 
-  // Base allocations — equal weight among active channels
-  const baseAlloc = 1 / CHANNELS.length;
   CHANNELS.forEach(ch => {
-    S.alloc[ch.id]    = ch.base || baseAlloc;
+    const pd = C.perfData[ch.id];
+    // Allocation from actual spend share
+    S.alloc[ch.id]    = totalSpend > 0 ? pd.spend / totalSpend : 1 / CHANNELS.length;
     S.mins[ch.id]     = ch.minDef;
     S.maxs[ch.id]     = ch.maxDef;
     S.cpms[ch.id]     = ch.cpmDef;
-    S.rois[ch.id]     = ch.roiWeight;
-    S.roiConfs[ch.id] = ch.roiConf;
+    // Weight = observed ROAS / ROAS goal
+    S.rois[ch.id]     = pd.roas / (C.roasTarget || 8);
+    S.roiConfs[ch.id] = 'confirmed'; // entered from real data
     S.cpmConfs[ch.id] = ch.cpmConf;
   });
-  // Normalize base allocations
-  const allocSum = Object.values(S.alloc).reduce((t,v)=>t+v,0);
-  CHANNELS.forEach(ch => { S.alloc[ch.id] /= allocSum; });
-  // Freeze baseline snapshot — used as the "ratio = 1.0" reference in calcChannelReturns.
-  // Never updated after launch, so optimizer movements away from this create dim-returns pressure.
+
+  // Freeze baseline snapshot from actual spend allocations
   S.baseAlloc = {};
-  CHANNELS.forEach(ch => { S.baseAlloc[ch.id] = S.alloc[ch.id]; });
-  // Freeze normalization denominator — prevents optimizer suppressing its own gains
-  S.baseAllocWeightedAvg = CHANNELS.reduce((s, ch) => s + (S.baseAlloc[ch.id] || 0) * ch.roiWeight, 0);
+  S.baseSpend = {};
+  CHANNELS.forEach(ch => {
+    S.baseAlloc[ch.id] = S.alloc[ch.id];
+    S.baseSpend[ch.id] = (C.perfData[ch.id]?.spend) || (S.alloc[ch.id] * S.budget * 1e6);
+  });
+  // Freeze normalization denominator
+  S.baseAllocWeightedAvg = CHANNELS.reduce((s, ch) => s + (S.baseAlloc[ch.id] || 0) * (S.rois[ch.id] || ch.roiWeight), 0);
 
   // Initialize market state
   initMarketBaseline();
@@ -1453,15 +1504,21 @@ function launchTool() {
     document.getElementById(id).classList.remove('locked');
   });
 
-  // Update budget slider range
+  // Update budget slider — start at actual spend, range up to 3×
   const budgetSlider = document.getElementById('s-budget');
-  const maxBudget = Math.max(200, C.budget * 3);
+  const maxBudget    = Math.max(50, Math.ceil(C.budget * 3));
+  budgetSlider.min   = (C.budget * 0.25).toFixed(1);
   budgetSlider.max   = maxBudget;
   budgetSlider.value = C.budget;
+  budgetSlider.step  = C.budget > 10 ? 0.5 : 0.1;
   document.getElementById('v-budget').textContent = '$' + C.budget.toFixed(1) + 'M';
 
-  // Show/hide awareness floor based on whether upper-funnel channels are active
+  // Show/hide awareness floor
   document.getElementById('awareness-floor-group').style.display = hasAwarenessChannels() ? '' : 'none';
+
+  // Render conf bar note
+  const confNote = document.getElementById('conf-bar-anchor-note');
+  if (confNote) confNote.textContent = 'ROAS goal: ' + C.roasTarget + 'x · Baseline from actual performance data';
 
   // Render optimizer
   renderChannels();
@@ -1470,7 +1527,6 @@ function launchTool() {
   renderSeason();
   renderROITable();
   updateHero();
-  renderConfBarNote();
   renderDisclaimerBody();
   renderEconPanel();
   renderROITableSubtitle();
@@ -1496,15 +1552,12 @@ function switchView(view) {
 
 // ── ANCHOR VALUE (model-aware) ───────────────────────────────────
 function getAnchor() {
-  // For ROAS model: anchor = target ROAS (e.g. 8)
-  // For impact model: anchor = impact multiplier (e.g. 434)
-  return C.modelType === 'roas' ? C.roasTarget : C.impactAnchor;
+  // Always ROAS model — anchor is the ROAS goal for comparison
+  return C.roasTarget || 8;
 }
 
 function getAnchorLabel() {
-  return C.modelType === 'roas'
-    ? 'ROAS ' + C.roasTarget.toFixed(1) + 'x target'
-    : C.impactAnchor + ':1 impact benchmark';
+  return 'ROAS goal ' + (C.roasTarget || 8).toFixed(1) + 'x';
 }
 
 // ── CALC CHANNEL RETURNS ─────────────────────────────────────────
@@ -1517,8 +1570,9 @@ function calcChannelReturns() {
     const weight         = S.rois[ch.id] || ch.roiWeight;
     const baselineReturn = anchor * weight;
     const currentSpend   = (S.alloc[ch.id] || 0) * S.budget * 1e6;
-    // defaultSpend scales with current budget so ratio=1.0 at baseline allocation %
-    const defaultSpend   = (S.baseAlloc[ch.id] || S.alloc[ch.id] || (1/CHANNELS.length)) * S.budget * 1e6;
+    // defaultSpend is frozen in absolute dollars at launch — so dim returns
+    // kick in correctly when budget increases, not just when allocation % shifts.
+    const defaultSpend   = S.baseSpend[ch.id] || (S.baseAlloc[ch.id] || S.alloc[ch.id] || (1/CHANNELS.length)) * S.budget * 1e6;
 
     if (defaultSpend === 0 || currentSpend === 0) {
       return { ch, baselineReturn, currentSpend, defaultSpend, dimFactor:0, effectiveReturn:0, channelImpact:0 };
@@ -1559,7 +1613,7 @@ function calcMarginal(id) {
 
 // ── HERO TILES ──────────────────────────────────────────────────
 function updateHero() {
-  const anchor       = getAnchor();
+  if (!CHANNELS.length) return;
   const totalImpact  = calcDiminishingReturns();
   const budget       = S.budget * 1e6;
   const fmtB = v => v >= 1e9 ? '$' + (v/1e9).toFixed(1) + 'B' : v >= 1e6 ? '$' + (v/1e6).toFixed(1) + 'M' : '$' + (v/1e3).toFixed(0) + 'k';
@@ -1570,35 +1624,21 @@ function updateHero() {
   const totalImpressions = budget / (wCPM / 1000);
   const impsLabel = totalImpressions >= 1e9 ? (totalImpressions/1e9).toFixed(1) + 'B' : (totalImpressions/1e6).toFixed(0) + 'M';
 
-  let tiles = [];
+  const blendedROAS = budget > 0 ? totalImpact / budget : 0;
+  const projRevenue = totalImpact;
+  const purchases   = C.transactionValue > 0 ? Math.round(projRevenue / C.transactionValue) : 0;
+  const cpa         = purchases > 0 ? budget / purchases : 0;
+  const roasGoal    = C.roasTarget || 8;
+  const vsGoal      = blendedROAS > 0 ? (blendedROAS >= roasGoal ? '+' + (blendedROAS - roasGoal).toFixed(1) + 'x vs goal' : (blendedROAS - roasGoal).toFixed(1) + 'x vs goal') : 'vs ' + roasGoal + 'x goal';
+  const roasColor   = blendedROAS >= roasGoal ? 'pos' : '';
 
-  if (C.modelType === 'roas') {
-    const blendedROAS = budget > 0 ? totalImpact / budget : 0;
-    const projRevenue = totalImpact;
-    const purchases   = C.transactionValue > 0 ? Math.round(projRevenue / C.transactionValue) : 0;
-    const cpa         = purchases > 0 ? budget / purchases : 0;
-
-    tiles = [
-      { label: 'Working Media', value: '$' + S.budget.toFixed(1) + 'M', sub: 'annual budget' },
-      { label: 'Projected Revenue', value: fmtB(projRevenue), sub: C.roasTarget + 'x ROAS target · diminishing returns', accent: true },
-      { label: 'Est. ' + C.transactionLabel + 's', value: purchases.toLocaleString(), sub: '$' + C.transactionValue + ' avg transaction', pos: true },
-      { label: 'Blended ROAS', value: blendedROAS.toFixed(1) + 'x', sub: 'vs. ' + C.roasTarget + 'x target' },
-      { label: 'Blended CPM', value: '$' + wCPM.toFixed(2), sub: impsLabel + ' impressions' },
-    ];
-  } else {
-    const lodgingShare = 0.35;
-    const tdtRate      = 0.06;
-    const estHotelRev  = totalImpact * lodgingShare;
-    const estTDT       = estHotelRev * tdtRate;
-
-    tiles = [
-      { label: 'Working Media', value: '$' + S.budget.toFixed(1) + 'M', sub: 'annual budget' },
-      { label: 'Economic Impact', value: fmtB(totalImpact), sub: anchor + ':1 benchmark · diminishing returns', accent: true },
-      { label: 'Est. Hotel Revenue', value: fmtB(estHotelRev), sub: '35% lodging share of spend', pos: true },
-      { label: 'Est. TDT', value: fmtB(estTDT), sub: 'Hotel rev × 6% TDT rate' },
-      { label: 'Blended CPM', value: '$' + wCPM.toFixed(2), sub: impsLabel + ' impressions' },
-    ];
-  }
+  const tiles = [
+    { label: 'Working Media',                    value: '$' + S.budget.toFixed(1) + 'M',      sub: 'annual budget' },
+    { label: 'Projected Revenue',                value: fmtB(projRevenue),                    sub: 'at current mix · dim returns applied', accent: true },
+    { label: 'Est. ' + (C.transactionLabel||'Purchase') + 's', value: purchases.toLocaleString(), sub: '$' + C.transactionValue + ' avg transaction', pos: true },
+    { label: 'Blended ROAS',                     value: blendedROAS.toFixed(1) + 'x',         sub: vsGoal, accent: !roasColor, pos: !!roasColor },
+    { label: 'Blended CPM',                      value: '$' + wCPM.toFixed(2),                sub: impsLabel + ' impressions' },
+  ];
 
   document.getElementById('hero-tiles').innerHTML = tiles.map(t =>
     "<div class=\"hm\"><div class=\"hm-label\">" + t.label + "</div>" +
@@ -1606,46 +1646,30 @@ function updateHero() {
     "<div class=\"hm-sub\">" + t.sub + "</div></div>"
   ).join('');
 
-  // Update econ panel
   renderEconPanel();
 }
 
 function renderEconPanel() {
-  const anchor      = getAnchor();
+  if (!CHANNELS.length) return;
   const totalImpact = calcDiminishingReturns();
   const budget      = S.budget * 1e6;
   const fmtB = v => v >= 1e9 ? '$' + (v/1e9).toFixed(1) + 'B' : v >= 1e6 ? '$' + (v/1e6).toFixed(1) + 'M' : '$' + (v/1e3).toFixed(0) + 'k';
+  const blendedROAS = budget > 0 ? totalImpact / budget : 0;
+  const purchases   = C.transactionValue > 0 ? Math.round(totalImpact / C.transactionValue) : 0;
+  const cpa         = purchases > 0 ? (budget / purchases) : 0;
+  const roasGoal    = C.roasTarget || 8;
+  const roasColor   = blendedROAS >= roasGoal ? 'var(--green)' : 'var(--orange)';
 
-  let title = 'Performance Summary';
-  let body  = '';
-
-  if (C.modelType === 'roas') {
-    const blendedROAS = budget > 0 ? totalImpact / budget : 0;
-    const purchases   = C.transactionValue > 0 ? Math.round(totalImpact / C.transactionValue) : 0;
-    const cpa         = purchases > 0 ? (budget / purchases) : 0;
-    body = "<div style=\"display:flex;justify-content:space-between;\"><span>Working media budget</span><span style=\"color:var(--ink);font-weight:500;\">$" + S.budget.toFixed(1) + "M</span></div>" +
-      "<div style=\"display:flex;justify-content:space-between;border-top:1px solid rgba(232,88,26,.15);padding-top:6px;margin-top:4px;\"><span>Projected revenue</span><span style=\"color:var(--green);font-weight:500;\">" + fmtB(totalImpact) + "</span></div>" +
-      "<div style=\"display:flex;justify-content:space-between;\"><span>Blended ROAS</span><span style=\"color:var(--orange);font-weight:500;\">" + blendedROAS.toFixed(1) + "x</span></div>" +
-      "<div style=\"display:flex;justify-content:space-between;\"><span>Est. " + C.transactionLabel + "s sold</span><span style=\"color:var(--blue-soft);font-weight:500;\">" + purchases.toLocaleString() + "</span></div>" +
-      "<div style=\"display:flex;justify-content:space-between;\"><span>Cost per " + C.transactionLabel.toLowerCase() + "</span><span style=\"color:var(--blue-soft);font-weight:500;\">$" + cpa.toFixed(2) + "</span></div>";
-  } else {
-    const estHotelRev = totalImpact * 0.35;
-    const estTDT      = estHotelRev * 0.06;
-    body = "<div style=\"display:flex;justify-content:space-between;\"><span>Working media budget</span><span style=\"color:var(--ink);font-weight:500;\">$" + S.budget.toFixed(1) + "M</span></div>" +
-      "<div style=\"display:flex;justify-content:space-between;border-top:1px solid rgba(232,88,26,.15);padding-top:6px;margin-top:4px;\"><span>Projected economic impact</span><span style=\"color:var(--green);font-weight:500;\">" + fmtB(totalImpact) + "</span></div>" +
-      "<div style=\"display:flex;justify-content:space-between;\"><span>Est. hotel revenue</span><span style=\"color:var(--blue-soft);font-weight:500;\">" + fmtB(estHotelRev) + "</span></div>" +
-      "<div style=\"display:flex;justify-content:space-between;\"><span>Est. TDT generated</span><span style=\"color:var(--blue);font-weight:500;\">" + fmtB(estTDT) + "</span></div>";
-  }
+  const body = "<div style=\"display:flex;justify-content:space-between;\"><span>Working media budget</span><span style=\"color:var(--ink);font-weight:500;\">$" + S.budget.toFixed(1) + "M</span></div>" +
+    "<div style=\"display:flex;justify-content:space-between;border-top:1px solid rgba(232,88,26,.15);padding-top:6px;margin-top:4px;\"><span>Projected revenue</span><span style=\"color:var(--green);font-weight:500;\">" + fmtB(totalImpact) + "</span></div>" +
+    "<div style=\"display:flex;justify-content:space-between;\"><span>Blended ROAS</span><span style=\"color:" + roasColor + ";font-weight:500;\">" + blendedROAS.toFixed(1) + "x <span style=\"font-size:9px;opacity:.7;\">goal " + roasGoal + "x</span></span></div>" +
+    "<div style=\"display:flex;justify-content:space-between;\"><span>Est. " + (C.transactionLabel||'Purchase') + "s</span><span style=\"color:var(--blue-soft);font-weight:500;\">" + purchases.toLocaleString() + "</span></div>" +
+    "<div style=\"display:flex;justify-content:space-between;\"><span>Cost per " + (C.transactionLabel||'Purchase').toLowerCase() + "</span><span style=\"color:var(--blue-soft);font-weight:500;\">$" + cpa.toFixed(2) + "</span></div>";
 
   const titleEl = document.getElementById('econ-panel-title');
   const bodyEl  = document.getElementById('econ-panel-body');
-  if (titleEl) titleEl.textContent = title;
+  if (titleEl) titleEl.textContent = 'Performance Summary';
   if (bodyEl)  bodyEl.innerHTML   = body;
-}
-
-function renderConfBarNote() {
-  const el = document.getElementById('conf-bar-anchor-note');
-  if (el) el.textContent = getAnchorLabel();
 }
 
 function renderDisclaimerBody() {
@@ -2031,15 +2055,13 @@ function genNarrative() {
     t += "The shoulder season push shifts budget toward lower-funnel channels during off-peak months, addressing the gap between seasonal demand peaks and year-round booking intent. ";
   }
 
-  if (C.modelType === 'roas') {
-    const blendedROAS = calcDiminishingReturns() / (S.budget * 1e6);
-    t += "At this allocation, the projected blended ROAS is <strong>" + blendedROAS.toFixed(1) + "x</strong> vs. the " + C.roasTarget + "x target. The diminishing returns model means adding more budget to already-heavy channels yields less than rebalancing toward underfunded ones. ";
-  }
+  const blendedROAS = calcDiminishingReturns() / (S.budget * 1e6);
+  t += "At this allocation, the projected blended ROAS is <strong>" + blendedROAS.toFixed(1) + "x</strong> vs. the " + (C.roasTarget||8) + "x goal. The diminishing returns model means adding more budget to already-heavy channels yields less than rebalancing toward underfunded ones. ";
 
   if (confirmed > 0) {
-    t += "<strong>" + confirmed + " of " + CHANNELS.length + " efficiency weights</strong> have been confirmed with actual data — the model improves as more actuals replace benchmarks. ";
+    t += "<strong>" + confirmed + " of " + CHANNELS.length + " efficiency weights</strong> are confirmed from actual performance data.";
   } else {
-    t += "<strong>All efficiency weights are currently benchmark-sourced.</strong> Replace with actual post-buy attribution data from your analytics platform to improve projection accuracy. ";
+    t += "<strong>All efficiency weights are benchmark-sourced.</strong> Replace with actual post-buy attribution data to improve accuracy.";
   }
 
   document.getElementById('narr-body').innerHTML = t;
@@ -2092,7 +2114,7 @@ function drawSparklines() {
 
     const weight     = S.rois[ch.id] || ch.roiWeight;
     const baseReturn = anchor * weight;
-    const baseSpend  = (S.baseAlloc[ch.id] || 1/CHANNELS.length) * S.budget * 1e6;
+    const baseSpend  = S.baseSpend[ch.id] || (S.baseAlloc[ch.id] || 1/CHANNELS.length) * S.budget * 1e6;
     const curSpend   = (S.alloc[ch.id] || 0) * S.budget * 1e6;
 
     const pts = [];
@@ -2202,7 +2224,11 @@ function resetAll() {
   const allocSum = Object.values(S.alloc).reduce((t,v)=>t+v,0);
   CHANNELS.forEach(ch => { S.alloc[ch.id] /= allocSum; });
   S.baseAlloc = {};
-  CHANNELS.forEach(ch => { S.baseAlloc[ch.id] = S.alloc[ch.id]; });
+  S.baseSpend = {};
+  CHANNELS.forEach(ch => {
+    S.baseAlloc[ch.id] = S.alloc[ch.id];
+    S.baseSpend[ch.id] = (C.perfData[ch.id]?.spend) || (S.alloc[ch.id] * C.budget * 1e6);
+  });
   S.baseAllocWeightedAvg = CHANNELS.reduce((s, ch) => s + (S.baseAlloc[ch.id] || 0) * ch.roiWeight, 0);
   S.budget = C.budget; S.shoulder = 30; S.objective = 'roi'; S.awarenessFloor = 20; S.optimized = false;
   document.getElementById('s-budget').value = C.budget;
@@ -2451,17 +2477,10 @@ function generatePlan() {
   // Header block
   const fmtB = v => v >= 1e9 ? '$'+(v/1e9).toFixed(1)+'B' : v >= 1e6 ? '$'+(v/1e6).toFixed(1)+'M' : '$'+(v/1e3).toFixed(0)+'k';
   const totalImpact = calcDiminishingReturns();
-  let metricLabel, metricVal, metricSub;
-  if (C.modelType === 'roas') {
-    const purchases = C.transactionValue > 0 ? Math.round(totalImpact / C.transactionValue) : 0;
-    metricLabel = 'Est. ' + C.transactionLabel + 's';
-    metricVal   = purchases.toLocaleString();
-    metricSub   = '$' + C.transactionValue + ' avg';
-  } else {
-    metricLabel = 'Economic Impact';
-    metricVal   = fmtB(totalImpact);
-    metricSub   = C.impactAnchor + ':1 anchor';
-  }
+  const purchases   = C.transactionValue > 0 ? Math.round(totalImpact / C.transactionValue) : 0;
+  const metricLabel = 'Est. ' + (C.transactionLabel||'Purchase') + 's';
+  const metricVal   = purchases.toLocaleString();
+  const metricSub   = '$' + C.transactionValue + ' avg';
   let wCPM = 0, tot = 0;
   CHANNELS.forEach(ch => { const a=S.alloc[ch.id]||0; wCPM+=a*(S.cpms[ch.id]||ch.cpmDef); tot+=a; });
   if (tot>0) wCPM/=tot;
