@@ -114,7 +114,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Figtree',sans-serif;font
 .setup-cta:active{transform:translateY(0);}
 
 /* ── HERO ── */
-.hero{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-sm);}
+.hero{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-sm);}
 .hm{background:var(--surface);padding:20px 24px 18px;transition:background .15s;position:relative;}
 .hm::after{content:'';position:absolute;bottom:0;left:24px;right:24px;height:2px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform .25s ease;border-radius:2px;}
 .hm:hover{background:var(--orange-wash);}
@@ -649,34 +649,63 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <div class="card-head"><div class="card-title">Optimizer Controls</div></div>
         <div class="ctrl-body">
 
+          <!-- Solver Mode Toggle -->
           <div class="ctrl-group">
+            <div class="ctrl-label"><span class="ctrl-label-txt">Budget Mode</span></div>
+            <div class="seg" id="mode-seg" style="grid-template-columns:1fr 1fr;">
+              <button class="seg-btn active" onclick="setSolverMode('fixed',this)">Fixed Budget</button>
+              <button class="seg-btn" onclick="setSolverMode('floor',this)">Marginal Floor</button>
+            </div>
+          </div>
+
+          <!-- Fixed budget controls (shown in fixed mode) -->
+          <div id="fixed-budget-ctrl" class="ctrl-group">
             <div class="ctrl-label">
               <span class="ctrl-label-txt">Total Budget</span>
               <span class="ctrl-val" id="v-budget">—</span>
             </div>
             <input type="range" id="s-budget" min="0.5" max="200" step="0.5" oninput="onBudget(this.value)">
-            <div class="range-lbls"><span>$0.5M</span><span>$200M</span></div>
+            <div class="range-lbls"><span id="budget-range-min">$0.5M</span><span id="budget-range-max">$200M</span></div>
+          </div>
+
+          <!-- Marginal floor controls (shown in floor mode) -->
+          <div id="floor-budget-ctrl" class="ctrl-group" style="display:none;">
+            <div style="padding:10px 0 6px;">
+              <div class="ctrl-label">
+                <span class="ctrl-label-txt">Marginal ROAS Floor</span>
+                <span class="ctrl-val" id="v-marginal-floor">1.0x</span>
+              </div>
+              <input type="range" id="s-marginal-floor" min="0.1" max="10" step="0.1" value="1.0" oninput="onMarginalFloor(this.value)">
+              <div class="range-lbls"><span>0.1x (brand)</span><span>10x (DR)</span></div>
+              <div style="font-size:10px;color:var(--ink-4);margin-top:6px;font-style:italic;">
+                Optimizer will find the budget ceiling where the next dollar returns exactly this ROAS.
+              </div>
+            </div>
+            <div style="padding:8px 0 4px;">
+              <div class="ctrl-label">
+                <span class="ctrl-label-txt">Budget Cap (upper limit)</span>
+                <span class="ctrl-val" id="v-budget-cap">—</span>
+              </div>
+              <input type="range" id="s-budget-cap" min="0.5" max="200" step="0.5" oninput="onBudgetCap(this.value)">
+              <div class="range-lbls"><span id="cap-range-min">$0.5M</span><span id="cap-range-max">$200M</span></div>
+              <div style="font-size:10px;color:var(--ink-4);margin-top:6px;font-style:italic;">
+                Solver will not exceed this budget even if marginal floor hasn't been reached.
+              </div>
+            </div>
+            <div id="floor-result" style="display:none;margin-top:8px;padding:10px 12px;background:var(--green-pale);border:1px solid var(--green);border-radius:var(--r-xs);">
+              <div style="font-size:11px;font-weight:600;color:var(--green);margin-bottom:4px;">Optimal budget found</div>
+              <div style="font-size:11px;color:var(--ink-3);font-family:'JetBrains Mono';" id="floor-result-body"></div>
+            </div>
           </div>
 
           <div class="ctrl-group">
             <div class="ctrl-label">
               <span class="ctrl-label-txt">Optimization Objective</span>
             </div>
-            <div class="seg" id="obj-seg">
-              <button class="seg-btn active" onclick="setObj('roi',this)">Econ ROI</button>
-              <button class="seg-btn" onclick="setObj('cpm',this)">Min CPM</button>
-              <button class="seg-btn" onclick="setObj('reach',this)">Max Reach</button>
-              <button class="seg-btn" onclick="setObj('perf',this)">Performance</button>
+            <div class="seg" id="obj-seg" style="grid-template-columns:1fr 1fr;">
+              <button class="seg-btn active" onclick="setObj('perf',this)">Maximize Performance</button>
+              <button class="seg-btn" onclick="setObj('reach',this)">Maximize Reach</button>
             </div>
-          </div>
-
-          <div class="ctrl-group">
-            <div class="ctrl-label">
-              <span class="ctrl-label-txt">Shoulder Season Push</span>
-              <span class="ctrl-val" id="v-shoulder">Standard</span>
-            </div>
-            <input type="range" id="s-shoulder" min="0" max="100" value="30" oninput="onShoulder(this.value)">
-            <div class="range-lbls"><span>None</span><span>Maximum</span></div>
           </div>
 
           <div class="ctrl-group" id="awareness-floor-group">
@@ -1096,7 +1125,8 @@ let C = {
 
 // Runtime state — rebuilt from C on launch
 let S = {
-  budget: 10, objective: 'roi', shoulder: 30, awarenessFloor: 20,
+  budget: 10, objective: 'roi', shoulder: 30, awarenessFloor: 20, marginalFloor: 1.0,
+  solverMode: 'fixed', budgetCap: 200,
   alloc: {}, mins: {}, maxs: {}, cpms: {}, rois: {}, roiConfs: {}, cpmConfs: {},
   baseAlloc: {}, baseSpend: {}, baseAllocWeightedAvg: 0,
   optimized: false,
@@ -1465,7 +1495,7 @@ function launchTool() {
   S.budget         = C.budget;
   S.awarenessFloor = hasAwarenessChannels() ? 20 : 0;
   S.optimized      = false;
-  S.objective      = 'roi';
+  S.objective      = 'perf';
   S.shoulder       = 30;
 
   CHANNELS.forEach(ch => {
@@ -1512,6 +1542,20 @@ function launchTool() {
   budgetSlider.value = C.budget;
   budgetSlider.step  = C.budget > 10 ? 0.5 : 0.1;
   document.getElementById('v-budget').textContent = '$' + C.budget.toFixed(1) + 'M';
+
+  // Initialize budget cap slider (for floor mode) to 3× current budget
+  S.budgetCap = maxBudget;
+  const capSlider = document.getElementById('s-budget-cap');
+  if (capSlider) {
+    capSlider.min   = (C.budget * 0.25).toFixed(1);
+    capSlider.max   = maxBudget;
+    capSlider.value = maxBudget;
+    capSlider.step  = C.budget > 10 ? 0.5 : 0.1;
+  }
+  document.getElementById('v-budget-cap').textContent = '$' + maxBudget.toFixed(1) + 'M';
+  // Range labels
+  ['budget-range-min','cap-range-min'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent='$'+(C.budget*0.25).toFixed(1)+'M'; });
+  ['budget-range-max','cap-range-max'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent='$'+maxBudget.toFixed(1)+'M'; });
 
   // Show/hide awareness floor
   document.getElementById('awareness-floor-group').style.display = hasAwarenessChannels() ? '' : 'none';
@@ -1611,6 +1655,12 @@ function calcMarginal(id) {
   return (after - before) / (eps * S.budget * 1e6);
 }
 
+function calcWeightedMarginal() {
+  return CHANNELS.reduce((sum, ch) => {
+    return sum + (S.alloc[ch.id] || 0) * calcMarginal(ch.id);
+  }, 0);
+}
+
 // ── HERO TILES ──────────────────────────────────────────────────
 function updateHero() {
   if (!CHANNELS.length) return;
@@ -1638,12 +1688,26 @@ function updateHero() {
     { label: 'Est. ' + (C.transactionLabel||'Purchase') + 's', value: purchases.toLocaleString(), sub: '$' + C.transactionValue + ' avg transaction', pos: true },
     { label: 'Blended ROAS',                     value: blendedROAS.toFixed(1) + 'x',         sub: vsGoal, accent: !roasColor, pos: !!roasColor },
     { label: 'Blended CPM',                      value: '$' + wCPM.toFixed(2),                sub: impsLabel + ' impressions' },
+    (function() {
+      const wm      = calcWeightedMarginal();
+      const floor   = S.marginalFloor || 1.0;
+      const above   = wm >= floor;
+      return {
+        label: 'Weighted Marginal Return',
+        value: '$' + wm.toFixed(2) + ' per $',
+        sub: (above ? '↑ above ' : '↓ below ') + floor.toFixed(1) + 'x floor',
+        pos: above,
+        accent: !above && wm > 0,
+        margColor: above ? 'var(--green)' : 'var(--red)',
+      };
+    })(),
   ];
 
   document.getElementById('hero-tiles').innerHTML = tiles.map(t =>
     "<div class=\"hm\"><div class=\"hm-label\">" + t.label + "</div>" +
-    "<div class=\"hm-value" + (t.accent ? " accent" : t.pos ? " pos" : "") + "\">" + t.value + "</div>" +
-    "<div class=\"hm-sub\">" + t.sub + "</div></div>"
+    "<div class=\"hm-value" + (t.accent ? " accent" : t.pos ? " pos" : "") + "\"" +
+    (t.margColor ? " style=\"color:" + t.margColor + ";\"" : "") + ">" + t.value + "</div>" +
+    "<div class=\"hm-sub\"" + (t.margColor ? " style=\"color:" + t.margColor + ";\"" : "") + ">" + t.sub + "</div></div>"
   ).join('');
 
   renderEconPanel();
@@ -1691,6 +1755,16 @@ function confLabel(c) { return c==='confirmed'?'CONFIRMED': c==='benchmarked'?'B
 
 function renderChannels() {
   let html = '';
+
+  // Reach mode warning — easy to miss that this objective ignores ROAS
+  if (S.objective === 'reach') {
+    html += "<div style=\"margin:0;padding:9px 20px;background:var(--blue-pale);border-bottom:1px solid #C4D0F5;display:flex;align-items:center;gap:10px;\">" +
+      "<span style=\"font-size:16px;\">◎</span>" +
+      "<div><span style=\"font-size:12px;font-weight:600;color:var(--blue);\">Reach mode active</span>" +
+      "<span style=\"font-size:11px;color:var(--blue-soft);margin-left:8px;\">Optimizer is scoring on CPM efficiency and funnel position — not ROAS. Revenue projections reflect allocation, not objective.</span></div>" +
+      "</div>";
+  }
+
   const chRetMap = {};
   calcChannelReturns().forEach(r => { chRetMap[r.ch.id] = r; });
   const anchor = getAnchor();
@@ -1909,10 +1983,12 @@ function renderROITable() {
 
 // ── OPTIMIZER ────────────────────────────────────────────────────
 function runOptimizer() {
+  if (S.solverMode === 'floor') { runFloorOptimizer(); return; }
   const btn = document.getElementById('opt-btn');
   btn.classList.add('running');
   btn.innerHTML = '<span class="spin"></span>Optimizing…';
   setTimeout(() => {
+    const prev = {...S.alloc};
     optimize();
     S.optimized = true;
     btn.classList.remove('running'); btn.classList.add('done');
@@ -1921,11 +1997,11 @@ function runOptimizer() {
     document.getElementById('results-sec').style.display = 'block';
     document.getElementById('narrative').style.display   = 'block';
     genNarrative();
+    renderDeltaTable(prev);
   }, 1300);
 }
 
 function optimize() {
-  const prev      = {...S.alloc};
   const MAX_ITER  = 800;
   const CONVERGE  = 2.0;
 
@@ -1976,28 +2052,22 @@ function optimize() {
 
   function score(id) {
     const ch = CHANNELS.find(c => c.id === id);
-    const mr = marginal(id);
-    if (S.objective === 'roi') return mr;
-    if (S.objective === 'cpm') {
-      const maxCPM = Math.max(...CHANNELS.map(c => S.cpms[c.id] || c.cpmDef));
-      return mr * (maxCPM / (S.cpms[id] || ch.cpmDef));
-    }
     if (S.objective === 'reach') {
-      const maxCPM = Math.max(...CHANNELS.map(c => S.cpms[c.id] || c.cpmDef));
-      const funnelBonus = ch.funnel === 'upper' ? 1.6 : ch.funnel === 'mid' ? 1.2 : 0.8;
-      return mr * (maxCPM / (S.cpms[id] || ch.cpmDef)) * funnelBonus;
+      // Pure media efficiency — impressions per dollar, upper-funnel bonus.
+      // No marginal return weighting. Biases toward cheap CPM awareness channels.
+      const cpm         = S.cpms[id] || ch.cpmDef;
+      const impsPerDollar = 1000 / cpm;
+      const funnelBonus = ch.funnel === 'upper' ? 2.0 : ch.funnel === 'mid' ? 1.2 : 0.6;
+      return impsPerDollar * funnelBonus;
     }
-    // 'perf': strong lower-funnel bias
-    const cb = ch.funnel === 'lower' ? 1.6 : ch.funnel === 'mid' ? 1.1 : 0.5;
+    // 'perf': marginal ROAS × strong lower-funnel bias.
+    // Biases toward search, OTA, metasearch — highest-converting channels.
+    const mr = marginal(id);
+    const cb = ch.funnel === 'lower' ? 1.8 : ch.funnel === 'mid' ? 1.0 : 0.4;
     return mr * cb;
   }
 
-  function adjustedScore(id) {
-    let s = score(id);
-    if (S.shoulder > 30 && ['search','ota','social'].includes(id)) s *= 1 + S.shoulder / 200;
-    if (S.shoulder > 50 && ['tv','print'].includes(id))            s *= 1 - S.shoulder / 300;
-    return s;
-  }
+  function adjustedScore(id) { return score(id); }
 
   for (let iter = 0; iter < MAX_ITER; iter++) {
     const scores = {};
@@ -2026,27 +2096,13 @@ function optimize() {
     clampAndNormalize();
   }
   clampAndNormalize();
-
-  // Render delta table
-  const deltas = CHANNELS.map(ch => ({
-    name: ch.name, color: ch.color, newPct: S.alloc[ch.id],
-    delta: (S.alloc[ch.id] - (prev[ch.id] || (ch.base||1/CHANNELS.length))) * S.budget
-  })).sort((a,b) => Math.abs(b.delta)-Math.abs(a.delta)).slice(0, 8);
-
-  let html = '';
-  deltas.forEach(d => {
-    const ds  = d.delta >= 0 ? '+' : '';
-    const cls = d.delta > 0.08 ? 'up' : d.delta < -0.08 ? 'dn' : 'neu';
-    html += "<div class=\"r-row\"><span class=\"r-label\"><span class=\"r-dot\" style=\"background:" + d.color + "\"></span>" + d.name + "</span><span class=\"r-vals\"><span class=\"r-pct\">" + Math.round(d.newPct*100) + "%</span><span class=\"r-delta " + cls + "\">" + ds + "$" + Math.abs(d.delta).toFixed(1) + "M</span></span></div>";
-  });
-  document.getElementById('results-list').innerHTML = html;
 }
 
 // ── NARRATIVE ────────────────────────────────────────────────────
 function genNarrative() {
   const topCh   = [...CHANNELS].sort((a,b)=>(S.alloc[b.id]||0)-(S.alloc[a.id]||0))[0];
   const topPct  = Math.round((S.alloc[topCh.id]||0)*100);
-  const objLabel = {roi:'maximize economic return per dollar',cpm:'minimize blended CPM',reach:'maximize reach-weighted impressions',perf:'maximize performance / lower-funnel efficiency'}[S.objective];
+  const objLabel = { reach: 'maximize reach and awareness across upper-funnel channels', perf: 'maximize lower-funnel performance and direct response' }[S.objective] || 'maximize performance';
   const confirmed = Object.values(S.roiConfs).filter(x=>x==='confirmed').length;
 
   let t = "Based on the objective to <strong>" + objLabel + "</strong>, " + topCh.name + " receives <strong>" + topPct + "%</strong> of working media, reflecting its position as the highest-efficiency channel in the active mix. ";
@@ -2074,9 +2130,211 @@ function onBudget(v) {
   renderChannels(); updateHero();
 }
 
+function onBudgetCap(v) {
+  S.budgetCap = parseFloat(v);
+  document.getElementById('v-budget-cap').textContent = '$' + parseFloat(v).toFixed(1) + 'M';
+}
+
+function setSolverMode(mode, btn) {
+  S.solverMode = mode;
+  // Toggle button states within the mode seg only
+  const modeSeg = document.getElementById('mode-seg');
+  if (modeSeg) modeSeg.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+  document.getElementById('fixed-budget-ctrl').style.display  = mode === 'fixed' ? '' : 'none';
+  document.getElementById('floor-budget-ctrl').style.display  = mode === 'floor' ? '' : 'none';
+  document.getElementById('floor-result').style.display = 'none';
+  // Update opt button label
+  const optBtn = document.getElementById('opt-btn');
+  if (optBtn) optBtn.textContent = mode === 'floor' ? 'Find Optimal Budget →' : 'Run Optimizer';
+}
+
+// ── TWO-LOOP SOLVER (marginal floor mode) ────────────────────────
+// Outer loop: steps budget upward from current spend
+// Inner loop: runs channel mix optimizer at each budget level
+// Stops when weighted marginal ROAS falls to the configured floor
+function runFloorOptimizer() {
+  const btn = document.getElementById('opt-btn');
+  btn.classList.add('running');
+  btn.innerHTML = '<span class="spin"></span>Searching…';
+
+  setTimeout(() => {
+    const floor       = S.marginalFloor || 1.0;
+    const cap         = S.budgetCap || (C.budget * 5);
+    // Start from 25% of current budget — allows finding optimal below current spend
+    const startBudget = Math.max(0.1, C.budget * 0.25);
+    // Target ~40 steps across the full range
+    const step        = Math.max(0.05, (cap - startBudget) / 40);
+    const INNER_ITER  = 250;
+
+    let bestBudget   = startBudget;
+    let bestAlloc    = {...S.alloc};
+    let bestMarginal = 0;
+    let found        = false;
+
+    // Snapshot current alloc to restore if we overshoot
+    const savedAlloc = {...S.alloc};
+
+    for (let b = startBudget; b <= cap + 0.001; b += step) {
+      b = Math.round(b * 100) / 100;
+      S.budget = b;
+
+      // Reset to baseline allocation before each inner solve —
+      // ensures inner optimizer explores from neutral, not from previous step's result
+      CHANNELS.forEach(ch => { S.alloc[ch.id] = S.baseAlloc[ch.id] || (1/CHANNELS.length); });
+
+      // Inner optimizer: find best mix at this budget
+      optimizeInner(INNER_ITER);
+
+      const wm = calcWeightedMarginal();
+
+      if (wm >= floor) {
+        bestBudget   = b;
+        bestAlloc    = {...S.alloc};
+        bestMarginal = wm;
+        found        = true;
+      } else {
+        // Crossed below floor — stop
+        break;
+      }
+    }
+
+    // Apply best result
+    S.budget    = bestBudget;
+    S.alloc     = bestAlloc;
+    S.optimized = true;
+
+    // Update budget slider
+    const budgetSlider = document.getElementById('s-budget');
+    if (budgetSlider) budgetSlider.value = bestBudget;
+    document.getElementById('v-budget').textContent = '$' + bestBudget.toFixed(1) + 'M';
+
+    // Show result panel
+    const resultEl = document.getElementById('floor-result');
+    const bodyEl   = document.getElementById('floor-result-body');
+    if (resultEl) resultEl.style.display = '';
+    if (bodyEl) {
+      const projRev = calcDiminishingReturns();
+      const fmtB    = v => v >= 1e9 ? '$'+(v/1e9).toFixed(1)+'B' : v >= 1e6 ? '$'+(v/1e6).toFixed(1)+'M' : '$'+(v/1e3).toFixed(0)+'k';
+      let msg = '';
+      if (!found) {
+        msg = '<span style="color:var(--amber);">⚠ Marginal floor not met at any budget level. Try lowering the floor or raising the cap.</span>';
+      } else if (bestBudget >= cap - step) {
+        msg = '<span style="color:var(--amber);">⚠ Budget cap reached before floor — increase cap or raise the floor.</span>';
+      } else if (bestBudget < C.budget - step) {
+        msg = '<span style="color:var(--green-dk);">↓ Optimal budget is below current spend — you may be overspending at this floor.</span>';
+      }
+      bodyEl.innerHTML =
+        'Optimal budget: <strong>$' + bestBudget.toFixed(1) + 'M</strong><br>' +
+        'Marginal ROAS at ceiling: <strong>' + bestMarginal.toFixed(2) + 'x</strong><br>' +
+        'Projected revenue: <strong>' + fmtB(projRev) + '</strong>' +
+        (msg ? '<br>' + msg : '');
+    }
+
+    btn.classList.remove('running');
+    btn.classList.add('done');
+    btn.textContent = '✓ Found — search again';
+
+    renderChannels(); updateHero(); renderROITable();
+    document.getElementById('results-sec').style.display = 'block';
+    document.getElementById('narrative').style.display   = 'block';
+    genNarrative();
+    renderDeltaTable(savedAlloc);
+  }, 800);
+}
+
+// Stripped-down inner optimizer — same logic, fewer iterations, no UI updates
+function optimizeInner(maxIter) {
+  const floors = {}, caps = {};
+  CHANNELS.forEach(ch => { floors[ch.id] = Math.max(0.005, (S.mins[ch.id]||0) / 100); });
+  CHANNELS.forEach(ch => { caps[ch.id]   = Math.min(1.0, Math.max(floors[ch.id], (S.maxs[ch.id]||35) / 100)); });
+
+  const hasTv  = CHANNELS.find(c => c.id === 'tv');
+  const hasCtv = CHANNELS.find(c => c.id === 'ctvdom');
+  if (hasTv && hasCtv && S.awarenessFloor > 0) {
+    const awarFloor = S.awarenessFloor / 100;
+    const tvA = S.alloc['tv'] || 0.15, ctvA = S.alloc['ctvdom'] || 0.12;
+    const combined = tvA + ctvA;
+    if (combined > 0) {
+      floors['tv']     = Math.max(floors['tv'],     awarFloor * (tvA / combined));
+      floors['ctvdom'] = Math.max(floors['ctvdom'],  awarFloor * (ctvA / combined));
+    }
+  }
+
+  function clampAndNormalize() {
+    CHANNELS.forEach(ch => { S.alloc[ch.id] = Math.min(caps[ch.id], Math.max(floors[ch.id], S.alloc[ch.id])); });
+    const floorSum = Object.values(floors).reduce((t,v)=>t+v,0);
+    const capSum   = Object.values(caps).reduce((t,v)=>t+v,0);
+    if (floorSum >= 1) { CHANNELS.forEach(ch => { S.alloc[ch.id] = floors[ch.id] / floorSum; }); return; }
+    if (capSum <= 1.0001) { CHANNELS.forEach(ch => { S.alloc[ch.id] = caps[ch.id] / capSum; }); return; }
+    let s = Object.values(S.alloc).reduce((t,v)=>t+v,0);
+    if (s > 0) CHANNELS.forEach(ch => { S.alloc[ch.id] /= s; });
+    CHANNELS.forEach(ch => { S.alloc[ch.id] = Math.min(caps[ch.id], Math.max(floors[ch.id], S.alloc[ch.id])); });
+    s = Object.values(S.alloc).reduce((t,v)=>t+v,0);
+    if (s > 0) CHANNELS.forEach(ch => { S.alloc[ch.id] /= s; });
+  }
+
+  function marginal(id) {
+    const eps = 0.001, saved = S.alloc[id];
+    const before = calcChannelReturns().find(r => r.ch.id === id).channelImpact;
+    S.alloc[id] = saved + eps;
+    const after = calcChannelReturns().find(r => r.ch.id === id).channelImpact;
+    S.alloc[id] = saved;
+    return (after - before) / (eps * S.budget * 1e6);
+  }
+
+  function score(id) {
+    const ch = CHANNELS.find(c => c.id === id);
+    if (S.objective === 'reach') {
+      const cpm = S.cpms[id] || ch.cpmDef;
+      const funnelBonus = ch.funnel === 'upper' ? 2.0 : ch.funnel === 'mid' ? 1.2 : 0.6;
+      return (1000 / cpm) * funnelBonus;
+    }
+    const mr = marginal(id);
+    const cb = ch.funnel === 'lower' ? 1.8 : ch.funnel === 'mid' ? 1.0 : 0.4;
+    return mr * cb;
+  }
+
+  clampAndNormalize();
+  const CONVERGE = 2.0;
+
+  for (let iter = 0; iter < maxIter; iter++) {
+    const scores = {};
+    CHANNELS.forEach(ch => { scores[ch.id] = score(ch.id); });
+    const mobile = CHANNELS.filter(ch => S.alloc[ch.id] > floors[ch.id]+0.001 && S.alloc[ch.id] < caps[ch.id]-0.001);
+    if (!mobile.length) break;
+    const avg = mobile.map(ch=>scores[ch.id]).reduce((t,v)=>t+v,0) / mobile.length;
+    const donors = CHANNELS.filter(ch => scores[ch.id] < avg && S.alloc[ch.id] > floors[ch.id]+0.001);
+    const recips = CHANNELS.filter(ch => scores[ch.id] > avg && S.alloc[ch.id] < caps[ch.id]-0.001);
+    if (!donors.length || !recips.length) break;
+    const gap = Math.max(...recips.map(ch=>scores[ch.id])) - Math.min(...donors.map(ch=>scores[ch.id]));
+    if (gap < CONVERGE) break;
+    const pool = Math.min(0.015, 0.0004 * gap);
+    const dW   = donors.reduce((t,ch)=>t+(avg-scores[ch.id]),0);
+    const rW   = recips.reduce((t,ch)=>t+(scores[ch.id]-avg),0);
+    donors.forEach(ch => { const take=Math.min(pool*(avg-scores[ch.id])/dW, S.alloc[ch.id]-floors[ch.id]); S.alloc[ch.id]-=Math.max(0,take); });
+    recips.forEach(ch => { const give=Math.min(pool*(scores[ch.id]-avg)/rW, caps[ch.id]-S.alloc[ch.id]); S.alloc[ch.id]+=Math.max(0,give); });
+    clampAndNormalize();
+  }
+  clampAndNormalize();
+}
+
+function renderDeltaTable(prevAlloc) {
+  const deltas = CHANNELS.map(ch => ({
+    name: ch.name, color: ch.color, newPct: S.alloc[ch.id],
+    delta: (S.alloc[ch.id] - (prevAlloc[ch.id] || (1/CHANNELS.length))) * S.budget
+  })).sort((a,b) => Math.abs(b.delta)-Math.abs(a.delta)).slice(0,8);
+  let html = '';
+  deltas.forEach(d => {
+    const ds = d.delta >= 0 ? '+' : '';
+    const cls = d.delta > 0.08 ? 'up' : d.delta < -0.08 ? 'dn' : 'neu';
+    html += "<div class=\"r-row\"><span class=\"r-label\"><span class=\"r-dot\" style=\"background:" + d.color + "\"></span>" + d.name + "</span><span class=\"r-vals\"><span class=\"r-pct\">" + Math.round(d.newPct*100) + "%</span><span class=\"r-delta " + cls + "\">" + ds + "$" + Math.abs(d.delta).toFixed(1) + "M</span></span></div>";
+  });
+  document.getElementById('results-list').innerHTML = html;
+}
+
 function setObj(o, btn) {
   S.objective = o;
-  document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+  document.getElementById('obj-seg').querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b === btn));
 }
 
 function onShoulder(v) {
@@ -2089,6 +2347,12 @@ function onAwareness(v) {
   S.awarenessFloor = parseInt(v);
   document.getElementById('v-awareness').textContent = v + '%';
   updateAwarenessDisplay();
+}
+
+function onMarginalFloor(v) {
+  S.marginalFloor = parseFloat(v);
+  document.getElementById('v-marginal-floor').textContent = parseFloat(v).toFixed(1) + 'x';
+  updateHero();
 }
 
 function onMin(id, v) {
@@ -2212,36 +2476,69 @@ function updateAwarenessDisplay() {
 }
 
 function resetAll() {
+  // Reset allocations back to original performance data percentages
   CHANNELS.forEach(ch => {
-    S.alloc[ch.id] = ch.base || 1/CHANNELS.length;
-    S.mins[ch.id]  = ch.minDef;
-    S.maxs[ch.id]  = ch.maxDef;
-    S.cpms[ch.id]  = ch.cpmDef;
-    S.rois[ch.id]  = ch.roiWeight;
-    S.roiConfs[ch.id] = ch.roiConf;
+    const pd = C.perfData[ch.id];
+    const totalSpend = CHANNELS.reduce((s, c) => s + (C.perfData[c.id]?.spend || 0), 0);
+    S.alloc[ch.id]    = totalSpend > 0 && pd?.spend ? pd.spend / totalSpend : 1/CHANNELS.length;
+    S.mins[ch.id]     = ch.minDef;
+    S.maxs[ch.id]     = ch.maxDef;
+    S.cpms[ch.id]     = ch.cpmDef;
+    S.rois[ch.id]     = pd?.roas ? pd.roas / (C.roasTarget || 8) : ch.roiWeight;
+    S.roiConfs[ch.id] = pd?.roas ? 'confirmed' : ch.roiConf;
     S.cpmConfs[ch.id] = ch.cpmConf;
   });
-  const allocSum = Object.values(S.alloc).reduce((t,v)=>t+v,0);
-  CHANNELS.forEach(ch => { S.alloc[ch.id] /= allocSum; });
   S.baseAlloc = {};
   S.baseSpend = {};
   CHANNELS.forEach(ch => {
     S.baseAlloc[ch.id] = S.alloc[ch.id];
-    S.baseSpend[ch.id] = (C.perfData[ch.id]?.spend) || (S.alloc[ch.id] * C.budget * 1e6);
+    S.baseSpend[ch.id] = C.perfData[ch.id]?.spend || (S.alloc[ch.id] * C.budget * 1e6);
   });
-  S.baseAllocWeightedAvg = CHANNELS.reduce((s, ch) => s + (S.baseAlloc[ch.id] || 0) * ch.roiWeight, 0);
-  S.budget = C.budget; S.shoulder = 30; S.objective = 'roi'; S.awarenessFloor = 20; S.optimized = false;
-  document.getElementById('s-budget').value = C.budget;
-  document.getElementById('v-budget').textContent = '$' + C.budget.toFixed(1) + 'M';
-  document.getElementById('s-shoulder').value = 30;
-  document.getElementById('v-shoulder').textContent = 'Standard';
-  document.getElementById('s-awareness').value = 20;
-  document.getElementById('v-awareness').textContent = '20%';
-  document.querySelectorAll('.seg-btn').forEach((b,i) => b.classList.toggle('active', i===0));
-  const btn = document.getElementById('opt-btn');
-  btn.className = 'opt-btn'; btn.textContent = 'Run Optimizer';
+  S.baseAllocWeightedAvg = CHANNELS.reduce((s, ch) => s + (S.baseAlloc[ch.id] || 0) * (S.rois[ch.id] || ch.roiWeight), 0);
+
+  S.budget = C.budget; S.objective = 'perf'; S.awarenessFloor = 20; S.marginalFloor = 1.0; S.solverMode = 'fixed'; S.optimized = false;
+
+  // DOM resets — guard every getElementById with optional chaining
+  const budgetEl = document.getElementById('s-budget');
+  if (budgetEl) budgetEl.value = C.budget;
+  const vBudget = document.getElementById('v-budget');
+  if (vBudget) vBudget.textContent = '$' + C.budget.toFixed(1) + 'M';
+
+  // Reset mode to Fixed Budget
+  const fixedCtrl = document.getElementById('fixed-budget-ctrl');
+  const floorCtrl = document.getElementById('floor-budget-ctrl');
+  const floorResult = document.getElementById('floor-result');
+  if (fixedCtrl) fixedCtrl.style.display = '';
+  if (floorCtrl) floorCtrl.style.display = 'none';
+  if (floorResult) floorResult.style.display = 'none';
+
+  // Reset Budget Mode seg (first button = Fixed Budget)
+  const modeSeg = document.getElementById('mode-seg');
+  if (modeSeg) modeSeg.querySelectorAll('.seg-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+
+  // Reset Objective seg (first button = Maximize Performance)
+  const objSeg = document.getElementById('obj-seg');
+  if (objSeg) objSeg.querySelectorAll('.seg-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+
+  // Reset awareness
+  const awarenessEl = document.getElementById('s-awareness');
+  if (awarenessEl) awarenessEl.value = 20;
+  const vAwareness = document.getElementById('v-awareness');
+  if (vAwareness) vAwareness.textContent = '20%';
+
+  // Reset marginal floor
+  const mfEl = document.getElementById('s-marginal-floor');
+  if (mfEl) { mfEl.value = 1.0; }
+  const vMf = document.getElementById('v-marginal-floor');
+  if (vMf) vMf.textContent = '1.0x';
+
+  // Reset opt button
+  const optBtn = document.getElementById('opt-btn');
+  if (optBtn) { optBtn.className = 'opt-btn'; optBtn.textContent = 'Run Optimizer'; }
+
   document.getElementById('results-sec').style.display = 'none';
-  document.getElementById('narrative').style.display = 'none';
+  document.getElementById('narrative').style.display   = 'none';
+
   renderChannels(); renderAssumptions(); renderSensitivity(); renderSeason(); renderROITable(); updateHero();
 }
 
